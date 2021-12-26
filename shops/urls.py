@@ -11,5 +11,5 @@ router.register("shop-product", views.ProductViewSet, basename="shop-product")
 
 
 urlpatterns = [
-    path('shop', include(router.urls)),
+    path('shop/', include(router.urls)),
 ]
