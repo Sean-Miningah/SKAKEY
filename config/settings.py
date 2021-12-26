@@ -28,7 +28,7 @@ DEBUG = os.environ.get('DEBUG') == "1"  # 1 == True
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 else:
-    ALLOWED_HOST = [os.environ['WEBSITE_HOSTNAME']]
+    ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME'], 'localhost']
 
 
 # Application definition
