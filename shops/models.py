@@ -34,6 +34,7 @@ class Shop(AbstractBaseUser, PermissionsMixin):
     photo = models.ImageField(upload_to='user/shop/')
     category = models.CharField(max_length=20, blank=False)
     firebase_token = models.CharField(max_length=50, blank=True)
+    password = models.CharField(max_length=1000)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 

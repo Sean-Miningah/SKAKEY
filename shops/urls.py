@@ -8,6 +8,7 @@ router.register("create-shop", views.UserViewSet, basename="create-shop")
 router.register("category", views.CategoryViewSet,
                 basename="category")
 router.register("shop-product", views.ProductViewSet, basename="shop-product")
+router.register("login", views.LoginViewSet, basename="login")
 
 
 urlpatterns = [

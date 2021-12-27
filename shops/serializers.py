@@ -1,9 +1,9 @@
 from rest_framework import serializers
 # from rest_framework.authtoken import Token
 
-from .models import ProductCategory, ShopProduct
-from django.contrib.auth import get_user_model
-Shop = get_user_model()
+from .models import ProductCategory, ShopProduct, Shop
+# from django.contrib.auth import get_user_model
+# Shop = get_user_model()
 
 # Shop Serializer
 ###############################################
@@ -54,20 +54,9 @@ class ShopRegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {"firebase_token": {"write_only": True}}
 
         def create(self, validated_data):
-            shop = Shop.objects.create(
-                first_name=validated_data["first_name"],
-                last_name=validated_data["last_name"],
-                shopname=validated_data["shopname"],
-                location=validated_data["location"],
-                photo=validated_data["photo"],
-                category=validated_data["category"],
-                firebase_token=validated_data["firebase_token"],
-                phonenumber=validated_data["phonenumber"]
-            )
-
-            shop.set_password(validated_data["firebase_token"])
+            password = validated_data.pop('firebase_token')
+            shop = Shop(**validated_data)
             shop.save()
-
             return shop
 
 
