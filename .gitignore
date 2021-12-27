@@ -216,3 +216,6 @@ cython_debug/
 
 # Data
 /data
+
+#Database media files 
+skakey-add tp cart db.png
