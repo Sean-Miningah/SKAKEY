@@ -2,6 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
+from shops.serializers import ShopProductSerializer
+from payment.models import Payment
+
 
 class CustomAccountManager(BaseUserManager):
 
@@ -74,4 +77,35 @@ class ShopProduct(models.Model):
     def __string__(self):
         return self.name
 
-# shop carting models.
+# Shopping Cart Related Models
+
+
+class ShoppingSession(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+    started_at = models.DateTimeField(editable=True)
+    ended_at = models.DateTimeField(editable=True)
+    total = models.BigIntegerField(editable=True)
+
+
+class CartItem(models.Model):
+    session = models.ForeignKey(ShoppingSession, on_delete=models.CASCADE)
+    product = models.ForeignKey(ShopProduct, on_delete=models.RESTRICT)
+    quantity = models.BigIntegerField(editable=True)
+    price = models.BigIntegerField(editable=True)
+
+
+class Invoice(models.Model):
+    session = models.ForeignKey(ShoppingSession, on_delete=models.RESTRICT)
+    shop = models.ForeignKey(Shop, on_delete=models.RESTRICT)
+    total = models.BigIntegerField(editable=True)
+    mode_of_payment = models.OneToOneField(Payment, related_name="payment")
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_update = models.DateTimeField(auto_now=True)
+
+
+class OrderItem(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        ShopProductSerializer, on_delete=models.Restrict)
+    quantity = models.BigIntegerField(editable=True)
+    total_price = models.BigIntegerField(editable=True)
