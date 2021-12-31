@@ -35,6 +35,7 @@ else:
 
 INSTALLED_APPS = [
     'shops',
+    'payment',
 
     'rest_framework',
     'rest_framework.authtoken',

@@ -217,4 +217,5 @@ cython_debug/
 # Data
 /data
 
+#Database media files 
 add_to_cart.png
