@@ -10,6 +10,8 @@ router.register("category", views.CategoryViewSet,
 router.register("shop-product", views.ProductViewSet, basename="shop-product")
 router.register("login", views.LoginViewSet, basename="login")
 
+router.register("cart", views.CartViewSet, basename="cart")
+router.register("cart-item", views.CartItemViews)
 
 urlpatterns = [
     path('shop/', include(router.urls)),
