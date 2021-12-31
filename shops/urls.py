@@ -9,7 +9,7 @@ router.register("category", views.CategoryViewSet,
                 basename="category")
 router.register("shop-product", views.ProductViewSet, basename="shop-product")
 router.register("cart", views.CartViewSet, basename="cart")
-router.register("cart/cart-item", views.CartItemView, basename="cart-item")
+router.register("cart-item", views.CartItemViews)
 
 urlpatterns = [
     path('shop/', include(router.urls)),

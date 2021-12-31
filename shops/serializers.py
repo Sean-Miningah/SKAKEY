@@ -137,13 +137,44 @@ class CartItemSerializer(serializers.ModelSerializer):
             'session', 'product', 'quantity', 'price'
         )
 
+    # def create(self, validated_data):
+    #     #
+    #     for item in validated_data:
+    #         session = item["session"]
+    #         sesh_obj = ShoppingSession.objects.get(id=session)
+    #         CartItem.objects.create(session=sesh_obj, **item)
+
+    #     return sesh_obj
+
 
 class ShoppingSessionSerializer(serializers.ModelSerializer):
+    # shop = serializers.PrimaryKeyRelatedField(
+    #     queryset=Shop.objects.all(), many=False)
+    # items = CartItemSerializer(many=True)
+
+    # class Meta:
+    #     model = ShoppingSession
+    #     fields = (
+    #         'id', 'shop', 'total', 'items'
+    #     )
+
+    # def create(self, validated_data):
+    #     # Create Session
+    #     session = ShoppingSession.objects.create()
+    #     items_data = validated_data.pop('items')
+    #     session = ShoppingSession.objects.create(**validated_data)
+    #     print(session)
+    #     for item_data in items_data:
+    #         print(session)
+    #         CartItem.objects.create(session=session, **item_data)
+    #     return session
+
     shop = serializers.PrimaryKeyRelatedField(
         queryset=Shop.objects.all(), many=False)
 
     class Meta:
         model = ShoppingSession
         fields = (
-            'shop', 'total', 'created_at'
+            'id', 'shop', 'created_at'
         )
+        extra_kwargs = {'total': {'required': False}}
