@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
-from shops.serializers import ShopProductSerializer
+
 from payment.models import Payment
 
 
@@ -53,10 +53,10 @@ class ProductCategory(models.Model):
     # shop will be handled with session
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     category = models.CharField(max_length=50, blank=False)
-    p_description = models.CharField(max_length=100, blank=False)
+    p_description = models.TextField(max_length=500, blank=False)
     last_update = models.DateTimeField(auto_now=True)
 
-    def __string__(self):
+    def __str__(self):
         return self.category
 
 
@@ -74,7 +74,7 @@ class ShopProduct(models.Model):
     photo = models.ImageField(upload_to='Shop/ShopProduct/', blank=True)
     barcode = models.CharField(max_length=150, blank=True)
 
-    def __string__(self):
+    def __str__(self):
         return self.name
 
 # Shopping Cart Related Models
@@ -82,8 +82,7 @@ class ShopProduct(models.Model):
 
 class ShoppingSession(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
-    started_at = models.DateTimeField(editable=True)
-    ended_at = models.DateTimeField(editable=True)
+    created_at = models.DateTimeField(default=timezone.now)
     total = models.BigIntegerField(editable=True)
 
 
@@ -93,19 +92,26 @@ class CartItem(models.Model):
     quantity = models.BigIntegerField(editable=True)
     price = models.BigIntegerField(editable=True)
 
+    def __str__(self):
+        return str(self.product)
+
 
 class Invoice(models.Model):
     session = models.ForeignKey(ShoppingSession, on_delete=models.RESTRICT)
     shop = models.ForeignKey(Shop, on_delete=models.RESTRICT)
     total = models.BigIntegerField(editable=True)
-    mode_of_payment = models.OneToOneField(Payment, related_name="payment")
+    mode_of_payment = models.OneToOneField(
+        Payment, related_name="payment", on_delete=models.RESTRICT)
     created_at = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.created_at
 
 
 class OrderItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     product = models.ForeignKey(
-        ShopProductSerializer, on_delete=models.Restrict)
+        ShopProduct, on_delete=models.RESTRICT)
     quantity = models.BigIntegerField(editable=True)
     total_price = models.BigIntegerField(editable=True)

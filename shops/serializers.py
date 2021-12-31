@@ -1,7 +1,9 @@
 from rest_framework import serializers
 # from rest_framework.authtoken import Token
 
-from .models import ProductCategory, ShopProduct
+from .models import (ProductCategory,
+                     ShopProduct, ShoppingSession, CartItem)
+
 from django.contrib.auth import get_user_model
 Shop = get_user_model()
 
@@ -91,3 +93,57 @@ class ShopProductSerializer(serializers.ModelSerializer):
         model = ShopProduct
         exclude = ['date_created', 'last_update']
         extra_kwargs = {'id': {"read_only": True}}
+
+
+# class CartItemSerializer(serializers.ModelSerializer):
+#     session = serializers.PrimaryKeyRelatedField(
+#         queryset=ShoppingSession.objects.all, many=False)
+#     product = serializers.PrimaryKeyRelatedField(
+#         queryset=ShopProduct.objects.all(), many=False)
+
+#     class Meta:
+#         model = CartItem
+#         fields = ['session', "product", "quantity", "price"]
+
+
+# class ShoppingSessionSerializer(serializers.Serializer):
+#     items = CartItemSerializer(many=True, read_only=False)
+#     shop = serializers.PrimaryKeyRelatedField(queryset=Shop.objects.all(),
+#                                               many=False)
+#     total = serializers.FloatField()
+
+#     def create(self, validated_data):
+#         # Creating the Session instance
+#         shoppingsession = ShoppingSession.objects.create(shop=validated_data['shop'],
+#                                                          total=validated_data['total'])
+
+#         # Create the session items
+#         for sesh_item in validated_data['items']:
+#             items = CartItem(session=shoppingsession, product=sesh_item['product'],
+#                              quantity=sesh_item['quantity'])
+#             items.save()
+
+#         return shoppingsession
+
+class CartItemSerializer(serializers.ModelSerializer):
+    session = serializers.PrimaryKeyRelatedField(
+        queryset=ShoppingSession.objects.all, many=False)
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=ShopProduct.objects.all(), many=False)
+
+    class Meta:
+        model = CartItem
+        fields = (
+            'session', 'product', 'quantity', 'price'
+        )
+
+
+class ShoppingSessionSerializer(serializers.ModelSerializer):
+    shop = serializers.PrimaryKeyRelatedField(
+        queryset=Shop.objects.all(), many=False)
+
+    class Meta:
+        model = ShoppingSession
+        fields = (
+            'shop', 'total', 'created_at'
+        )

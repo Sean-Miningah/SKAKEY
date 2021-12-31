@@ -12,8 +12,10 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializers import (
     ShopRegistrationSerializer,
-    ShopProductCategorySerializer, ShopProductSerializer)
-from .models import ProductCategory, ShopProduct
+    ShopProductCategorySerializer, ShopProductSerializer, ShoppingSession,
+    CartItemSerializer,
+    ShoppingSessionSerializer)
+from .models import ProductCategory, ShopProduct, CartItem
 from django.contrib.auth import get_user_model
 
 Shop = get_user_model()
@@ -58,7 +60,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = ShopProduct
+    queryset = ShopProduct.objects.all()
     serializer_class = ShopProductSerializer
 
     def create(self, request, *args, **kwargs):
@@ -71,3 +73,43 @@ class ProductViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
 
         return Response(status=status.HTTP_201_CREATED, headers=headers)
+
+
+class CartViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = ShoppingSession.objects.all()
+    serializer_class = ShoppingSessionSerializer
+
+    def create(self, request, *args, **kwargs):
+        request.data._mutable = True
+        request.data['shop'] = request.user.id
+        request.data._mutable = False
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        res = {
+            "message": "cart_succesfully created",
+            "cart_id": serializer.instance.pk
+        }
+
+        return Response(res, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class CartItemView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        res = {
+            "message": "Items created and added to cart"
+        }
+
+        return Response(res, status=status.HTTP_201_CREATE, headers=headers)
