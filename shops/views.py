@@ -4,7 +4,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.decorators import permission_classes
-# from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes
 # from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -179,10 +179,10 @@ class CartItemViews(viewsets.ModelViewSet):
         this_session.save()
 
         for item in items:
+            print(item)
+            print('\t \n \n')
             item["session"] = this_session.id
             item["shop_product"] = ShopProduct.objects.get(id=item["product"])
-
-        for item in items:
             CartItem.objects.create(session=this_session,
                                     product=item["shop_product"], quantity=item["quantity"], price=item["price"])
 
@@ -191,3 +191,47 @@ class CartItemViews(viewsets.ModelViewSet):
         }
 
         return Response(res, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+def cartsitem(request):
+    items = request.data.pop("items")
+    this_session = request.data.pop("session")
+    this_session = ShoppingSession.objects.get(id=this_session)
+
+    # this_session.total = request.data.pop("total")
+    # this_session.save()
+    session_total = 0
+
+    for item in items:
+        item["shop_product"] = ShopProduct.objects.get(id=item["product"])
+        if item["shop_product"].quantity > item["quantity"]:
+            if (item["shop_product"].quantity - item["quantity"]) < 0:
+
+                return Response({
+                    "message": "Product inventory is too low to satisfy this order"
+                })
+            else:
+                item["shop_product"].quantity = item["shop_product"].quantity - \
+                    item["quantity"]
+                item["shop_product"].save()
+                item["price"] = item["shop_product"].price * item["quantity"]
+                session_total = session_total + item["price"]
+
+                CartItem.objects.create(session=this_session,
+                                        product=item["shop_product"], quantity=item["quantity"], price=item["price"])
+        else:
+            return Response({
+                "message": "Product inventory is too low to satisfy this order"
+            })
+
+    this_session.total = session_total
+    this_session.save()
+
+    res = {
+        "message": "Cart Item Created",
+        "session_total": this_session.total
+    }
+
+    return Response(res, status=status.HTTP_201_CREATED)

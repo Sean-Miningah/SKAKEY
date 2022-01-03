@@ -11,8 +11,9 @@ router.register("shop-product", views.ProductViewSet, basename="shop-product")
 router.register("login", views.LoginViewSet, basename="login")
 
 router.register("cart", views.CartViewSet, basename="cart")
-router.register("cart-item", views.CartItemViews)
+# router.register("cart-item", views.cartsitem, name='carts-item')
 
 urlpatterns = [
     path('shop/', include(router.urls)),
+    path('shop/cart-item/', views.cartsitem, name='carts-item'),
 ]
