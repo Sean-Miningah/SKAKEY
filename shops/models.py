@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 
-from payment.models import Payment
+from payment.models import PaymentMethod
 
 
 class CustomAccountManager(BaseUserManager):
@@ -74,6 +74,8 @@ class ShopProduct(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     photo = models.ImageField(upload_to='Shop/ShopProduct/', blank=True)
     barcode = models.CharField(max_length=150, blank=True)
+    minimum_stock_level = models.BigIntegerField(editable=True, default=0)
+    reorder_quantity = models.IntegerField(editable=True, default=0)
 
     def __str__(self):
         return self.name
@@ -85,6 +87,7 @@ class ShoppingSession(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     total = models.BigIntegerField(editable=True, null=True)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.RESTRICT, default=1)
 
 
 class CartItem(models.Model):
@@ -103,7 +106,7 @@ class Invoice(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.RESTRICT)
     total = models.BigIntegerField(editable=True)
     mode_of_payment = models.OneToOneField(
-        Payment, related_name="payment", on_delete=models.RESTRICT)
+        PaymentMethod, related_name="payment", on_delete=models.RESTRICT)
     created_at = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
 
