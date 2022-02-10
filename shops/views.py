@@ -1,7 +1,8 @@
 # import json
 # from re import S
 # from django.http import JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
+# from django.core.exceptions import ObjectDoesNotExist
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import permission_classes
 from rest_framework.decorators import api_view, permission_classes
@@ -91,6 +92,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = ShopProduct.objects.all()
     serializer_class = ShopProductSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['category']
 
     def create(self, request, *args, **kwargs):
         request.data._mutable = True
