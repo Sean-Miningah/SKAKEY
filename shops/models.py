@@ -87,7 +87,7 @@ class ShoppingSession(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     total = models.BigIntegerField(editable=True, null=True)
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.RESTRICT, default=1)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.RESTRICT, blank=True)
 
 
 class CartItem(models.Model):
