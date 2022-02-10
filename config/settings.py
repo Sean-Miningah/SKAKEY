@@ -121,9 +121,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Rest framework permission applied to the server
 REST_FRAMEWORK = {
-    # 'DEFAULT_FILTER_BACKENDS': [
-    #     'django_filters.rest_framework.DjangoFilterBackend'    
-    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
