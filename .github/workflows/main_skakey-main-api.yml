@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'skakey-main-api'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_354AED872A5540BBAEF34AD24FACDBD8 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_42D6CCEA474E4B8AB081991090E6E08F }}
