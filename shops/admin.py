@@ -34,11 +34,12 @@ class SessionAdminConfig(admin.ModelAdmin):
     search_fields = ('shop', 'total')
     list_display = ('id', 'shop', 'created_at', 'total')
 
+    
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': (
-                'shop', 'created_at', 'total'
+                'shop', 'created_at', 'total', 'payment_method'
             ),
         }),
     )
@@ -77,7 +78,7 @@ class CategoryAdminConfig(admin.ModelAdmin):
 class ProductAdminConfig(admin.ModelAdmin):
     ordering = ("-price",)
     search_fields = ('shop', 'price', 'category', 'source')
-    list_display = ('id', 'name', 'shop', 'quantity', 'price')
+    list_display = ('id', 'name', 'shop', 'quantity', 'price',)
 
     fieldsets = (
         (None, {'fields': ('name', 'p_description', 'category', 'source',)}),

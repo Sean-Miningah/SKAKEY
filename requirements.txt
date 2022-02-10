@@ -4,6 +4,7 @@ backports.zoneinfo==0.2.1
 cffi==1.15.0
 cryptography==36.0.1
 Django==4.0
+django-filter==21.1
 django-dotenv==1.4.2
 django-rest-auth==0.9.5
 djangorestframework==3.13.1
