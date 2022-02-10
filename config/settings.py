@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') == "1"  # 1 == True
 
 if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ['WEBSITE_HOSTNAME']]
 else:
     ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME'], 'localhost']
 
