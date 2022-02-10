@@ -25,8 +25,8 @@ class CreditPayment(models.Model):
     amount_payed = models.IntegerField(blank=False)
     total_shopping = models.IntegerField(blank=False)
     amount_remaining = models.IntegerField(blank=False)
-    date_payment_expected = models.DateTimeField(blank=False)
-    last_update = models.DateTimeField(auto_now=True)
+    date_payment_expected = models.DateField(blank=False)
+    last_update = models.DateField(auto_now=True)
     
     
     def __str__(self):

@@ -9,15 +9,16 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         model = PaymentMethod 
         extra_kwargs = {"id":{"read_only":True},
                         "method":{"read_only":True}}
-        
+        fields = '__all__'
 
 class CreditPaymentSerializer(serializers.ModelSerializer):
     
-    session = serializers.PrimaryKeyRelatedField(queryset=ShoppingSession.objects.all, many=False)
+    session = serializers.PrimaryKeyRelatedField(
+        queryset=ShoppingSession.objects.all(), many=False)
     
     class Meta:
         model = CreditPayment
-        exclude = ['last_update',]
+        exclude = ['last_update']
         
         
 
