@@ -1,5 +1,6 @@
 from payment.models import PaymentMethod, CreditPayment
 from payment.serializers import CreditPaymentSerializer, PaymentMethodSerializer
+from shops.models import ShoppingSession 
 # from payment.serializers import -
 
 from django.http import JsonResponse
@@ -8,6 +9,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
+
 
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
@@ -21,6 +23,16 @@ class CreditPaymentView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = CreditPayment.objects.all()
     serializer_class = CreditPaymentSerializer 
+    
+    def get_queryset(self):
+        user = self.request.user
+        shoppingsessions = ShoppingSession.objects.filter(shop=user)
+        
+        def shopsession(sessions = []):
+            for Sesh in sessions:
+                return Sesh.id
+        
+        return CreditPayment.objects.filter(session = shopsession(shoppingsessions))
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

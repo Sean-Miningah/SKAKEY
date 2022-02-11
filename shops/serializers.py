@@ -86,7 +86,6 @@ class ShopProductSerializer(serializers.ModelSerializer):
         exclude = ['date_created', 'last_update']
         extra_kwargs = {'id': {"read_only": True}}
 
-
 # class CartItemSerializer(serializers.ModelSerializer):
 #     session = serializers.PrimaryKeyRelatedField(
 #         queryset=ShoppingSession.objects.all, many=False)
