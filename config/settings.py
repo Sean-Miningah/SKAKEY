@@ -58,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS=[os.environ['WEBSITE_HOSTNAME'], '127.0.0.1']
+CSRF_TRUSTED_ORIGINS=['https://skakey-main-api.azurewebsites.net',os.environ['WEBSITE_HOSTNAME'], '127.0.0.1']
 
 ROOT_URLCONF = 'config.urls'
 
