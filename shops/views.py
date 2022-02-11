@@ -69,8 +69,12 @@ class LoginViewSet(viewsets.ModelViewSet):
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = ProductCategory.objects.all()
+    # queryset = ProductCategory.objects.all()
     serializer_class = ShopProductCategorySerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        return ProductCategory.objects.filter(shop=user)
 
     def create(self, request, *args, **kwargs):
         request.data._mutable = True
@@ -90,10 +94,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = ShopProduct.objects.all()
+    # queryset = ShopProduct.objects.all()
     serializer_class = ShopProductSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['category']
+    
+    def get_queryset(self):
+        user = self.request.user
+        return ShopProduct.objects.filter(shop=user)
 
     def create(self, request, *args, **kwargs):
         request.data._mutable = True
@@ -115,6 +123,10 @@ class CartViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = ShoppingSession.objects.all()
     serializer_class = ShoppingSessionSerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        return ShoppingSession.objects.filter(shop=user)
 
     def create(self, request, *args, **kwargs):
         # request.data._mutable = True
