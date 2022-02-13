@@ -64,7 +64,7 @@ class ProductCategory(models.Model):
 class ShopProduct(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, blank=False)
-    quantity = models.FloatField(editable=True)
+    quantity = models.IntegerField(editable=True)
     price = models.BigIntegerField(editable=True)
     p_description = models.TextField(max_length=250, blank=False)
     category = models.ForeignKey(
@@ -87,7 +87,7 @@ class ShoppingSession(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     total = models.BigIntegerField(editable=True, null=True)
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.RESTRICT, blank=True)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.RESTRICT, null=True)
 
 
 class CartItem(models.Model):
