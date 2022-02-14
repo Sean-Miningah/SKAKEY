@@ -286,7 +286,7 @@ class InvoiceView(viewsets.ModelViewSet):
         
         res = {
             "shop_info" : shop_info_serializer.data,
-            "cart_serializer" : cart_serializer.data,
+            "cart_info" : cart_serializer.data,
             "cart_items": cart_items_serializer.data,
             "payment_method": payment_method_serializer.data  
         }
