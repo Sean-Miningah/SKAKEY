@@ -3,6 +3,8 @@
 # from django.http import JsonResponse
 # from django.core.exceptions import ObjectDoesNotExist
 from collections import namedtuple
+from datetime import datetime
+from django.utils.dateparse import parse_date
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
@@ -148,6 +150,10 @@ class CartViewSet(viewsets.ModelViewSet):
         }
 
         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
 
 # class CartItemView(viewsets.ModelViewSet):
@@ -292,3 +298,25 @@ class InvoiceView(viewsets.ModelViewSet):
         }
         
         return Response(res, status=status.HTTP_200_OK)
+    
+class SalesView(viewsets.ModelViewSet):
+    def list(self, request):
+        start_date = datetime.strptime(request.data["start_date"], '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d').replace(tzinfo=datetime.timezone.utc)
+        
+        # start_date = parse_date(request.data["start_date"])
+        # end_date = parse_date(request.data["end_date"])
+        
+        carts= ShoppingSession.objects.filter(created_at=end_date,
+                                              shop=request.user.id)
+        print(f"This are the carts \n{carts}")
+        # cart_items = []
+        # for cart in carts:
+        #     # item = CartItem.objects.filter(session=cart.id)
+        #     # cart_items.append(item)
+        
+        cart_serializer = ShoppingSessionSerializer(carts,many=True)
+        
+        return Response(cart_serializer.data, status=status.HTTP_200_OK)
+        
+        
