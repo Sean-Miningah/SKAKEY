@@ -32,7 +32,7 @@ class ShopAdminConfig(UserAdmin):
 class SessionAdminConfig(admin.ModelAdmin):
     ordering = ("-created_at",)
     search_fields = ('shop', 'total')
-    list_display = ('id', 'shop', 'created_at', 'total')
+    list_display = ('id', 'shop', 'created_at', 'total', 'payment_method')
 
     
     add_fieldsets = (
