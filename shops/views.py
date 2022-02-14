@@ -220,7 +220,7 @@ def cartsitem(request):
     items = request.data.pop("items")
     this_session = request.data.pop("session")
     this_session = ShoppingSession.objects.get(id=this_session)
-    payment_method = request.data.pop("payment_method")
+    # payment_method = request.data.pop("payment_method")
     # this_session.total = request.data.pop("total")
     # this_session.save()
     session_total = 0
@@ -248,7 +248,7 @@ def cartsitem(request):
             })
 
     this_session.total = session_total
-    this_session.payment_method = PaymentMethod.objects.get(id=payment_method)
+    # this_session.payment_method = PaymentMethod.objects.get(id=payment_method)
     this_session.save()
 
     res = {
