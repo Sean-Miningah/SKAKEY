@@ -10,7 +10,7 @@ from .models import (CartItem, Shop,
 class ShopAdminConfig(UserAdmin):
     ordering = ('-start_date',)
     search_fields = ('phonenumber', 'location', 'shopname')
-    list_display = ('phonenumber', 'shopname', 'firebase_token',
+    list_display = ('id','phonenumber', 'shopname', 'firebase_token',
                     'category', 'is_staff')
 
     fieldsets = (

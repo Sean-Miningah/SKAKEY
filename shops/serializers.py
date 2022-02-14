@@ -83,7 +83,7 @@ class ShoppingSessionSerializer(serializers.ModelSerializer):
         
 class ReceiptSerializer(serializers.Serializer):
     
-    # shopname = ShopSerializer()
+    shopname = ShopSerializer()
     cart = ShoppingSessionSerializer()
     cartitems = CartItemSerializer(many=True)
     paymentmethod = PaymentMethodSerializer()

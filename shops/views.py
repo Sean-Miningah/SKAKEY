@@ -2,6 +2,8 @@
 # from re import S
 # from django.http import JsonResponse
 # from django.core.exceptions import ObjectDoesNotExist
+from collections import namedtuple
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import permission_classes
@@ -14,10 +16,13 @@ from rest_framework.permissions import IsAuthenticated
 
 
 from .serializers import (
+    CartItemSerializer,
     ShopRegistrationSerializer,
     ShopProductCategorySerializer, ShopProductSerializer, ShoppingSession,
-    CartItemSerializer,
+    ReceiptSerializer,
     ShoppingSessionSerializer)
+
+from payment.serializers import PaymentMethodSerializer
 from .models import ProductCategory, ShopProduct, CartItem
 from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
@@ -252,3 +257,38 @@ def cartsitem(request):
     }
 
     return Response(res, status=status.HTTP_201_CREATED)
+
+class InvoiceView(viewsets.ModelViewSet):
+    
+    def list(self, request):
+        cart_id = request.data["cart_id"]
+        
+        shop = Shop.objects.get(id=request.user.id)
+        cart = ShoppingSession.objects.get(id=cart_id)
+        cart_items = CartItem.objects.filter(session=cart_id)
+        paymentmethod = PaymentMethod.objects.get(id=cart.payment_method.id)
+        
+        # Invoice = namedtuple('Receipt',('shopname', 'cart', 'cartitems', 'paymentmethod'))
+        
+        # invoice = Invoice(
+        #         shopname = shop,
+        #         cart = cart, 
+        #         cartitems = cart_items, 
+        #         paymentmethod = paymentmethod
+                
+        #     )
+        
+        shop_info_serializer = ShopRegistrationSerializer(shop)
+        cart_serializer = ShoppingSessionSerializer(cart)
+        cart_items_serializer = CartItemSerializer(cart_items, many=True)
+        payment_method_serializer = PaymentMethodSerializer(paymentmethod)     
+        # serializer = ReceiptSerializer(Invoice)
+        
+        res = {
+            "shop_info" : shop_info_serializer.data,
+            "cart_serializer" : cart_serializer.data,
+            "cart_items": cart_items_serializer.data,
+            "payment_method": payment_method_serializer.data  
+        }
+        
+        return Response(res, status=status.HTTP_200_OK)

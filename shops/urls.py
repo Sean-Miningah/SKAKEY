@@ -14,6 +14,7 @@ router.register("login", views.LoginViewSet, basename="login")
 router.register("payment/credit-details", p_views.CreditPaymentView, basename="credit")
 
 router.register("cart", views.CartViewSet, basename="cart")
+router.register("cart-invoice", views.InvoiceView, basename="cart-invoice")
 # router.register("cart-item", views.cartsitem, name='carts-item')
 
 urlpatterns = [
