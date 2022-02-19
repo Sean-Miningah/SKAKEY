@@ -21,11 +21,11 @@ from .serializers import (
     CartItemSerializer,
     ShopRegistrationSerializer,
     ShopProductCategorySerializer, ShopProductSerializer, ShoppingSession,
-    ReceiptSerializer,
+    ShopKeeperSerializer,
     ShoppingSessionSerializer)
 
 from payment.serializers import PaymentMethodSerializer
-from .models import ProductCategory, ShopProduct, CartItem
+from .models import ProductCategory, ShopKeeper, ShopProduct, CartItem
 from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
 from .utilities import get_and_authenticate_shop
@@ -53,6 +53,23 @@ class UserViewSet(viewsets.ModelViewSet):
         }
 
         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class ShopKeeperView(viewsets.ModelViewSet):
+    queryset = ShopKeeper.objects.all()
+    serializer_class =  ShopKeeperSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        
+        res = {
+            "message" : "successfully registered Shopkeeper",
+        }
+        
+        return Response(status=status.HTTP_201_CREATED, headers=headers)
 
 
 class LoginViewSet(viewsets.ModelViewSet):

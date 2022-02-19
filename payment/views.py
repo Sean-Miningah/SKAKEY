@@ -35,6 +35,8 @@ class CreditPaymentView(viewsets.ModelViewSet):
         return CreditPayment.objects.filter(session = shopsession(shoppingsessions))
     
     def create(self, request, *args, **kwargs):
+        # request.GET = request.GET.copy()
+        # request.GET['date_payment_expected'] = str(request.GET[''])
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

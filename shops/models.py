@@ -28,26 +28,43 @@ class CustomAccountManager(BaseUserManager):
 
 
 class Shop(AbstractBaseUser, PermissionsMixin):
-    first_name = models.CharField(max_length=20, blank=False)
-    last_name = models.CharField(max_length=20, blank=False)
-    shopname = models.CharField(max_length=20, blank=False)
-    start_date = models.CharField(default=timezone.now, max_length=50)
-    location = models.CharField(max_length=100)
-    phonenumber = models.CharField(max_length=15, unique=True)
+    name = models.CharField(max_length=20, blank=False,)
+    start_date = models.DateField(default=timezone.now, max_length=50)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    email_address = models.CharField(max_length=15, unique=True)
     photo = models.ImageField(upload_to='user/shop/')
     category = models.CharField(max_length=20, blank=False)
+    county = models.CharField(max_length=100)
+    ward = models.CharField(max_length=100)
+    subcounty=models.CharField(max_length=100)
     firebase_token = models.CharField(max_length=50, blank=True)
-    password = models.CharField(max_length=1000)
+    password = models.CharField(max_length=100)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-
+    
     objects = CustomAccountManager()
 
-    USERNAME_FIELD = 'phonenumber'
+    USERNAME_FIELD = 'email_address'
     REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.shopname
+    
+class ShopKeeper(models.Model):
+    shop = models.ForeignKey('Shop', on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=20, blank=False)
+    last_name = models.CharField(max_length=20, blank=False)
+    phone_number = models.CharField(max_length=50, blank=False, unique=True)
+    start_date = models.DateField(default=timezone.now, max_length=50)
+    national_id = models.CharField(max_length=25, blank=True)
+    passportnumber = models.CharField(max_length=25, blank=True)
+    is_employee = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.first_name+' '+self.last_name
+    
+        
 
 
 class ProductCategory(models.Model):

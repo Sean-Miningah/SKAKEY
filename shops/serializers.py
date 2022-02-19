@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import ProductCategory, ShopProduct, Shop
+from .models import ProductCategory, ShopKeeper, ShopProduct, Shop
 from .models import (ProductCategory,
                      ShopProduct, ShoppingSession, CartItem)
 from payment.serializers import PaymentMethodSerializer
@@ -16,14 +16,16 @@ class ShopSerializer(serializers.ModelSerializer):
         exclude = ['is_staff', 'is_active', 'start_date']
 
 
+class ShopKeeperSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShopKeeper 
+        fields = '__all__'
+
 class ShopRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shop
-        fields = (
-            "id", "first_name", "last_name", "shopname", "location", "photo",
-            "category", "firebase_token", "phonenumber"
-        )
+        exclude = ['is_staff','is_active','password']
         extra_kwargs = {"firebase_token": {"write_only": True}}
 
         def create(self, validated_data):
@@ -82,9 +84,11 @@ class ShoppingSessionSerializer(serializers.ModelSerializer):
         
         
 class ReceiptSerializer(serializers.Serializer):
+    items = CartItemSerializer(many=True)
     
-    shopname = ShopSerializer()
-    cart = ShoppingSessionSerializer()
-    cartitems = CartItemSerializer(many=True)
-    paymentmethod = PaymentMethodSerializer()
+    class Meta:
+        model = ShoppingSession  
+        fields = (
+            'id', 'shop', 'created_at', 'total', 'payment_method', 'items'
+        )
 

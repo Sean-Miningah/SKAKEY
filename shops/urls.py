@@ -6,6 +6,7 @@ from payment import views as p_views
 
 router = DefaultRouter()
 router.register("create-shop", views.UserViewSet, basename="create-shop")
+router.register("shopkeeper-info", views.ShopKeeperView, basename="shopkeeper-info")
 router.register("category", views.CategoryViewSet,
                 basename="category")
 router.register("shop-product", views.ProductViewSet, basename="shop-product")
@@ -15,6 +16,7 @@ router.register("payment/credit-details", p_views.CreditPaymentView, basename="c
 
 router.register("cart", views.CartViewSet, basename="cart")
 router.register("cart-invoice", views.InvoiceView, basename="cart-invoice")
+router.register("sales", views.SalesView, basename="sales")
 # router.register("cart-item", views.cartsitem, name='carts-item')
 
 urlpatterns = [
