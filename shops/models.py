@@ -1,9 +1,10 @@
 from django.db import models
-from django.utils import timezone
+# from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
+# from datetime import date
 
-from payment.models import PaymentMethod
+# from payment.models import PaymentMethod
 
 
 class CustomAccountManager(BaseUserManager):
@@ -27,17 +28,14 @@ class CustomAccountManager(BaseUserManager):
         return self.create_user(phonenumber, password, **other_fields)
 
 
-class Shop(AbstractBaseUser, PermissionsMixin):
-    name = models.CharField(max_length=20, blank=False,)
-    start_date = models.DateField(default=timezone.now, max_length=50)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    email_address = models.CharField(max_length=15, unique=True)
-    photo = models.ImageField(upload_to='user/shop/')
-    category = models.CharField(max_length=20, blank=False)
-    county = models.CharField(max_length=100)
-    ward = models.CharField(max_length=100)
-    subcounty=models.CharField(max_length=100)
+class ShopKeeper(AbstractBaseUser, PermissionsMixin):
+    first_name = models.CharField(max_length=20, blank=False)
+    last_name = models.CharField(max_length=20, blank=False)
+    start_date = models.DateField(auto_now=True)
+    phone_number = models.CharField(max_length=50, blank=False, unique=True)
+    passportnumber = models.CharField(max_length=25, blank=True)
+    is_employee = models.BooleanField(default=True)
+    national_id = models.CharField(max_length=25, blank=True)
     firebase_token = models.CharField(max_length=50, blank=True)
     password = models.CharField(max_length=100)
     is_staff = models.BooleanField(default=False)
@@ -45,95 +43,98 @@ class Shop(AbstractBaseUser, PermissionsMixin):
     
     objects = CustomAccountManager()
 
-    USERNAME_FIELD = 'email_address'
+    USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.shopname
+        return self.first_name + ' ' + self.last_name
     
-class ShopKeeper(models.Model):
-    shop = models.ForeignKey('Shop', on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=20, blank=False)
-    last_name = models.CharField(max_length=20, blank=False)
-    phone_number = models.CharField(max_length=50, blank=False, unique=True)
-    start_date = models.DateField(default=timezone.now, max_length=50)
-    national_id = models.CharField(max_length=25, blank=True)
-    passportnumber = models.CharField(max_length=25, blank=True)
-    is_employee = models.BooleanField(default=True)
+class Shop(models.Model):
+    name = models.CharField(max_length=20, blank=False,)
+    shopkeeper = models.ForeignKey('ShopKeeper', on_delete=models.CASCADE, blank=True, default=None)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    start_date = models.DateField(auto_now=True)
+    email_address = models.CharField(max_length=15, unique=True)
+    photo = models.ImageField(upload_to='user/shop/')
+    category = models.CharField(max_length=20, blank=False)
+    county = models.CharField(max_length=100)
+    ward = models.CharField(max_length=100)
+    subcounty=models.CharField(max_length=100)
     
     def __str__(self):
-        return self.first_name+' '+self.last_name
+        return self.name
     
         
 
 
-class ProductCategory(models.Model):
-    # shop will be handled with session
-    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
-    category = models.CharField(max_length=50, blank=False)
-    p_description = models.TextField(max_length=500, blank=False)
-    last_update = models.DateTimeField(auto_now=True)
+# class ProductCategory(models.Model):
+#     # shop will be handled with session
+#     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+#     category = models.CharField(max_length=50, blank=False)
+#     p_description = models.TextField(max_length=500, blank=False)
+#     last_update = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.category
-
-
-class ShopProduct(models.Model):
-    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, blank=False)
-    quantity = models.IntegerField(editable=True)
-    price = models.BigIntegerField(editable=True)
-    p_description = models.TextField(max_length=250, blank=False)
-    category = models.ForeignKey(
-        ProductCategory, on_delete=models.CASCADE, blank=False)
-    source = models.CharField(max_length=50, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    last_update = models.DateTimeField(auto_now=True)
-    photo = models.ImageField(upload_to='Shop/ShopProduct/', blank=True)
-    barcode = models.CharField(max_length=150, blank=True)
-    minimum_stock_level = models.BigIntegerField(editable=True, default=0)
-    reorder_quantity = models.IntegerField(editable=True, default=0)
-
-    def __str__(self):
-        return self.name
-
-# Shopping Cart Related Models
+#     def __str__(self):
+#         return self.category
 
 
-class ShoppingSession(models.Model):
-    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(default=timezone.now)
-    total = models.BigIntegerField(editable=True, null=True)
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.RESTRICT, null=True)
+# class ShopProduct(models.Model):
+#     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+#     name = models.CharField(max_length=50, blank=False)
+#     quantity = models.IntegerField(editable=True)
+#     price = models.BigIntegerField(editable=True)
+#     p_description = models.TextField(max_length=250, blank=False)
+#     category = models.ForeignKey(
+#         ProductCategory, on_delete=models.CASCADE, blank=False)
+#     source = models.CharField(max_length=50, blank=True)
+#     date_created = models.DateTimeField(auto_now_add=True)
+#     last_update = models.DateTimeField(auto_now=True)
+#     photo = models.ImageField(upload_to='Shop/ShopProduct/', blank=True)
+#     barcode = models.CharField(max_length=150, blank=True)
+#     minimum_stock_level = models.BigIntegerField(editable=True, default=0)
+#     reorder_quantity = models.IntegerField(editable=True, default=0)
+
+#     def __str__(self):
+#         return self.name
+
+# # Shopping Cart Related Models
 
 
-class CartItem(models.Model):
-    session = models.ForeignKey(
-        ShoppingSession, on_delete=models.CASCADE, blank=True)
-    product = models.ForeignKey(ShopProduct, on_delete=models.RESTRICT)
-    quantity = models.BigIntegerField(editable=True)
-    price = models.BigIntegerField(editable=True)
-
-    def __str__(self):
-        return str(self.product)
+# class ShoppingSession(models.Model):
+#     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+#     created_at = models.DateTimeField(default=timezone.now)
+#     total = models.BigIntegerField(editable=True, null=True)
+#     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.RESTRICT, null=True)
 
 
-class Invoice(models.Model):
-    session = models.ForeignKey(ShoppingSession, on_delete=models.RESTRICT)
-    shop = models.ForeignKey(Shop, on_delete=models.RESTRICT)
-    total = models.BigIntegerField(editable=True)
-    mode_of_payment = models.OneToOneField(
-        PaymentMethod, related_name="payment", on_delete=models.RESTRICT)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_update = models.DateTimeField(auto_now=True)
+# class CartItem(models.Model):
+#     session = models.ForeignKey(
+#         ShoppingSession, on_delete=models.CASCADE, blank=True)
+#     product = models.ForeignKey(ShopProduct, on_delete=models.RESTRICT)
+#     quantity = models.BigIntegerField(editable=True)
+#     price = models.BigIntegerField(editable=True)
 
-    def __str__(self):
-        return self.created_at
+#     def __str__(self):
+#         return str(self.product)
 
 
-class OrderItem(models.Model):
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
-    product = models.ForeignKey(
-        ShopProduct, on_delete=models.RESTRICT)
-    quantity = models.BigIntegerField(editable=True)
-    total_price = models.BigIntegerField(editable=True)
+# class Invoice(models.Model):
+#     session = models.ForeignKey(ShoppingSession, on_delete=models.RESTRICT)
+#     shop = models.ForeignKey(Shop, on_delete=models.RESTRICT)
+#     total = models.BigIntegerField(editable=True)
+#     mode_of_payment = models.OneToOneField(
+#         PaymentMethod, related_name="payment", on_delete=models.RESTRICT)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     last_update = models.DateTimeField(auto_now=True)
+
+#     def __str__(self):
+#         return self.created_at
+
+
+# class OrderItem(models.Model):
+#     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+#     product = models.ForeignKey(
+#         ShopProduct, on_delete=models.RESTRICT)
+#     quantity = models.BigIntegerField(editable=True)
+#     total_price = models.BigIntegerField(editable=True)

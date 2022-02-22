@@ -18,24 +18,21 @@ from rest_framework.permissions import IsAuthenticated
 
 
 from .serializers import (
-    CartItemSerializer,
-    ShopRegistrationSerializer,
-    ShopProductCategorySerializer, ShopProductSerializer, ShoppingSession,
-    ShopKeeperSerializer,
-    ShoppingSessionSerializer)
+    ShopSerializer,
+    ShopKeeperSerializer,)
 
-from payment.serializers import PaymentMethodSerializer
-from .models import ProductCategory, ShopKeeper, ShopProduct, CartItem
-from payment.models import PaymentMethod
+# from payment.serializers import PaymentMethodSerializer
+from .models import Shop
+# from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
 from .utilities import get_and_authenticate_shop
 
-Shop = get_user_model()
+ShopKeeper = get_user_model()
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = Shop.objects.all()
-    serializer_class = ShopRegistrationSerializer
+class ShopKeeperView(viewsets.ModelViewSet):
+    queryset = ShopKeeper.objects.all()
+    serializer_class = ShopKeeperSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -43,21 +40,21 @@ class UserViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        shop = Shop.objects.get(phonenumber=request.data['phonenumber'])
-        shop.set_password(request.data['firebase_token'])
-        shop.save()
-        token = Token.objects.create(user=shop)
+        shopkeeper = ShopKeeper.objects.get(phone_number=request.data['phone_number'])
+        shopkeeper.set_password(request.data['firebase_token'])
+        shopkeeper.save()
+        token = Token.objects.create(user=shopkeeper)
         res = {
-            "message": "succesfully registered",
-            "token": "Token " + token.key
+            "message": "Succesfully registered",
+            "token": "Token " + token.key,
         }
 
         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class ShopKeeperView(viewsets.ModelViewSet):
-    queryset = ShopKeeper.objects.all()
-    serializer_class =  ShopKeeperSerializer
+class ShopView(viewsets.ModelViewSet):
+    queryset = Shop.objects.all()
+    serializer_class =  ShopSerializer
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -66,23 +63,23 @@ class ShopKeeperView(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         
         res = {
-            "message" : "successfully registered Shopkeeper",
+            "message" : "Shop is good!!!",
         }
         
         return Response(status=status.HTTP_201_CREATED, headers=headers)
 
 
 class LoginViewSet(viewsets.ModelViewSet):
-    queryset = Shop.objects.all()
-    serializer_class = ShopRegistrationSerializer
+    queryset = ShopKeeper.objects.all()
+    serializer_class = ShopKeeperSerializer
     http_method_names = ['post', 'head']
 
     def create(self, request, *args, **kwargs):
-        phonenumber = request.data['phonenumber']
+        phone_number = request.data['phone_number']
         firebase_token = request.data['firebase_token']
 
-        shop = get_and_authenticate_shop(phonenumber, firebase_token)
-        token = Token.objects.get(user=shop)
+        shopkeeper = get_and_authenticate_shop(phone_number, firebase_token)
+        token = Token.objects.get(user=shopkeeper)
         res = {
             "message": "successfully logged in",
             "token": "Token " + token.key
@@ -91,249 +88,249 @@ class LoginViewSet(viewsets.ModelViewSet):
         return Response(res, status=status.HTTP_201_CREATED)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    # queryset = ProductCategory.objects.all()
-    serializer_class = ShopProductCategorySerializer
-    
-    def get_queryset(self):
-        user = self.request.user
-        return ProductCategory.objects.filter(shop=user)
-
-    def create(self, request, *args, **kwargs):
-        request.data._mutable = True
-        request.data['shop'] = request.user.id
-        request.data._mutable = False
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-
-        res = {
-            "message": "Category Succesfully created"
-        }
-
-        return Response(res, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class ProductViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    # queryset = ShopProduct.objects.all()
-    serializer_class = ShopProductSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['category']
-    
-    def get_queryset(self):
-        user = self.request.user
-        return ShopProduct.objects.filter(shop=user)
-
-    def create(self, request, *args, **kwargs):
-        request.data._mutable = True
-        request.data['shop'] = request.user.id
-        print(request.data)
-        request.data._mutable = False
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        res = {
-            "message": "Product Succesfully created"
-        }
-
-        return Response(res, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class CartViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    queryset = ShoppingSession.objects.all()
-    serializer_class = ShoppingSessionSerializer
-    
-    def get_queryset(self):
-        user = self.request.user
-        return ShoppingSession.objects.filter(shop=user)
-
-    def create(self, request, *args, **kwargs):
-        # request.data._mutable = True
-        request.data['shop'] = request.user.id
-        # request.data._mutable = False
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-
-        res = {
-            "message": "cart_succesfully created",
-            "cart_id": serializer.instance.pk
-        }
-
-        return Response(res, status=status.HTTP_201_CREATED, headers=headers)
-    
-    def partial_update(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
-
-
-# class CartItemView(viewsets.ModelViewSet):
+# class CategoryViewSet(viewsets.ModelViewSet):
 #     permission_classes = [IsAuthenticated]
-#     queryset = CartItem.objects.all()
-#     serializer_class = CartItemSerializer
+#     # queryset = ProductCategory.objects.all()
+#     serializer_class = ShopProductCategorySerializer
+    
+#     def get_queryset(self):
+#         user = self.request.user
+#         return ProductCategory.objects.filter(shop=user)
 
 #     def create(self, request, *args, **kwargs):
-#         data = request.data.copy()
-#         session = data['session']
-#         items = data.pop('items')
-#         this_session = ShoppingSession.objects.get(id=session)
-#         this_session.total = data["total"]
-#         this_session.save()
-#         # print(data)
-#         for item in items:
-#             item["session"] = this_session.id
-
-#         # print(items)
-#         print(items)
-#         serializer = self.get_serializer(
-#             data=items, many=isinstance(items, list))
-#         # print(serializer.is_valid())
-#         # serializer.is_valid(raise_exception=True)
-#         # if not serializer.is_valid():
-#         #     print(serializer.errors)
-#         print('\n')
+#         request.data._mutable = True
+#         request.data['shop'] = request.user.id
+#         request.data._mutable = False
+#         serializer = self.get_serializer(data=request.data)
 #         serializer.is_valid(raise_exception=True)
 #         self.perform_create(serializer)
 #         headers = self.get_success_headers(serializer.data)
 
 #         res = {
-#             "message": "Items created and added to cart"
+#             "message": "Category Succesfully created"
 #         }
 
 #         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
 
 
-# class CartItemViews(viewsets.ModelViewSet):
+# class ProductViewSet(viewsets.ModelViewSet):
 #     permission_classes = [IsAuthenticated]
-#     queryset = CartItem.objects.all()
-#     serializer_class = CartItemSerializer
+#     # queryset = ShopProduct.objects.all()
+#     serializer_class = ShopProductSerializer
+#     filter_backends = [DjangoFilterBackend]
+#     filterset_fields = ['category']
+    
+#     def get_queryset(self):
+#         user = self.request.user
+#         return ShopProduct.objects.filter(shop=user)
 
-#     def create(self, request):
-#         items = request.data.pop("items")
-#         this_session = request.data.pop("session")
-#         this_session = ShoppingSession.objects.get(id=this_session)
+#     def create(self, request, *args, **kwargs):
+#         request.data._mutable = True
+#         request.data['shop'] = request.user.id
+#         print(request.data)
+#         request.data._mutable = False
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_create(serializer)
+#         headers = self.get_success_headers(serializer.data)
+#         res = {
+#             "message": "Product Succesfully created"
+#         }
 
-#         this_session.total = request.data.pop("total")
-#         this_session.save()
+#         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
 
-#         for item in items:
-#             print(item)
-#             print('\t \n \n')
-#             item["session"] = this_session.id
-#             item["shop_product"] = ShopProduct.objects.get(id=item["product"])
-#             CartItem.objects.create(session=this_session,
-#                                     product=item["shop_product"], quantity=item["quantity"], price=item["price"])
+
+# class CartViewSet(viewsets.ModelViewSet):
+#     permission_classes = [IsAuthenticated]
+#     queryset = ShoppingSession.objects.all()
+#     serializer_class = ShoppingSessionSerializer
+    
+#     def get_queryset(self):
+#         user = self.request.user
+#         return ShoppingSession.objects.filter(shop=user)
+
+#     def create(self, request, *args, **kwargs):
+#         # request.data._mutable = True
+#         request.data['shop'] = request.user.id
+#         # request.data._mutable = False
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_create(serializer)
+#         headers = self.get_success_headers(serializer.data)
 
 #         res = {
+#             "message": "cart_succesfully created",
+#             "cart_id": serializer.instance.pk
+#         }
+
+#         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
+    
+#     def partial_update(self, request, *args, **kwargs):
+#         kwargs['partial'] = True
+#         return self.update(request, *args, **kwargs)
+
+
+# # class CartItemView(viewsets.ModelViewSet):
+# #     permission_classes = [IsAuthenticated]
+# #     queryset = CartItem.objects.all()
+# #     serializer_class = CartItemSerializer
+
+# #     def create(self, request, *args, **kwargs):
+# #         data = request.data.copy()
+# #         session = data['session']
+# #         items = data.pop('items')
+# #         this_session = ShoppingSession.objects.get(id=session)
+# #         this_session.total = data["total"]
+# #         this_session.save()
+# #         # print(data)
+# #         for item in items:
+# #             item["session"] = this_session.id
+
+# #         # print(items)
+# #         print(items)
+# #         serializer = self.get_serializer(
+# #             data=items, many=isinstance(items, list))
+# #         # print(serializer.is_valid())
+# #         # serializer.is_valid(raise_exception=True)
+# #         # if not serializer.is_valid():
+# #         #     print(serializer.errors)
+# #         print('\n')
+# #         serializer.is_valid(raise_exception=True)
+# #         self.perform_create(serializer)
+# #         headers = self.get_success_headers(serializer.data)
+
+# #         res = {
+# #             "message": "Items created and added to cart"
+# #         }
+
+# #         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
+
+
+# # class CartItemViews(viewsets.ModelViewSet):
+# #     permission_classes = [IsAuthenticated]
+# #     queryset = CartItem.objects.all()
+# #     serializer_class = CartItemSerializer
+
+# #     def create(self, request):
+# #         items = request.data.pop("items")
+# #         this_session = request.data.pop("session")
+# #         this_session = ShoppingSession.objects.get(id=this_session)
+
+# #         this_session.total = request.data.pop("total")
+# #         this_session.save()
+
+# #         for item in items:
+# #             print(item)
+# #             print('\t \n \n')
+# #             item["session"] = this_session.id
+# #             item["shop_product"] = ShopProduct.objects.get(id=item["product"])
+# #             CartItem.objects.create(session=this_session,
+# #                                     product=item["shop_product"], quantity=item["quantity"], price=item["price"])
+
+# #         res = {
 #             "message": "Cart Item Created"
 #         }
 
 #         return Response(res, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
-@permission_classes((IsAuthenticated, ))
-def cartsitem(request):
-    items = request.data.pop("items")
-    this_session = request.data.pop("session")
-    this_session = ShoppingSession.objects.get(id=this_session)
-    # payment_method = request.data.pop("payment_method")
-    # this_session.total = request.data.pop("total")
-    # this_session.save()
-    session_total = 0
+# @api_view(['POST'])
+# @permission_classes((IsAuthenticated, ))
+# def cartsitem(request):
+#     items = request.data.pop("items")
+#     this_session = request.data.pop("session")
+#     this_session = ShoppingSession.objects.get(id=this_session)
+#     # payment_method = request.data.pop("payment_method")
+#     # this_session.total = request.data.pop("total")
+#     # this_session.save()
+#     session_total = 0
 
-    for item in items:
-        item["shop_product"] = ShopProduct.objects.get(id=item["product"])
-        if item["shop_product"].quantity > item["quantity"]:
-            if (item["shop_product"].quantity - item["quantity"]) < 0:
+#     for item in items:
+#         item["shop_product"] = ShopProduct.objects.get(id=item["product"])
+#         if item["shop_product"].quantity > item["quantity"]:
+#             if (item["shop_product"].quantity - item["quantity"]) < 0:
 
-                return Response({
-                    "message": "Product inventory is too low to satisfy this order"
-                })
-            else:
-                item["shop_product"].quantity = item["shop_product"].quantity - \
-                    item["quantity"]
-                item["shop_product"].save()
-                item["price"] = item["shop_product"].price * item["quantity"]
-                session_total = session_total + item["price"]
+#                 return Response({
+#                     "message": "Product inventory is too low to satisfy this order"
+#                 })
+#             else:
+#                 item["shop_product"].quantity = item["shop_product"].quantity - \
+#                     item["quantity"]
+#                 item["shop_product"].save()
+#                 item["price"] = item["shop_product"].price * item["quantity"]
+#                 session_total = session_total + item["price"]
 
-                CartItem.objects.create(session=this_session,
-                                        product=item["shop_product"], quantity=item["quantity"], price=item["price"])
-        else:
-            return Response({
-                "message": "Product inventory is too low to satisfy this order"
-            })
+#                 CartItem.objects.create(session=this_session,
+#                                         product=item["shop_product"], quantity=item["quantity"], price=item["price"])
+#         else:
+#             return Response({
+#                 "message": "Product inventory is too low to satisfy this order"
+#             })
 
-    this_session.total = session_total
-    # this_session.payment_method = PaymentMethod.objects.get(id=payment_method)
-    this_session.save()
+#     this_session.total = session_total
+#     # this_session.payment_method = PaymentMethod.objects.get(id=payment_method)
+#     this_session.save()
 
-    res = {
-        "message": "Cart Item(s) Created",
-        "session_total": this_session.total
-    }
+#     res = {
+#         "message": "Cart Item(s) Created",
+#         "session_total": this_session.total
+#     }
 
-    return Response(res, status=status.HTTP_201_CREATED)
+#     return Response(res, status=status.HTTP_201_CREATED)
 
-class InvoiceView(viewsets.ModelViewSet):
+# # class InvoiceView(viewsets.ModelViewSet):
     
-    def list(self, request):
-        cart_id = request.data["cart_id"]
+# #     def list(self, request):
+# #         cart_id = request.data["cart_id"]
         
-        shop = Shop.objects.get(id=request.user.id)
-        cart = ShoppingSession.objects.get(id=cart_id)
-        cart_items = CartItem.objects.filter(session=cart_id)
-        paymentmethod = PaymentMethod.objects.get(id=cart.payment_method.id)
+#         # shop = Shop.objects.get(id=request.user.id)
+#         # cart = ShoppingSession.objects.get(id=cart_id)
+#         # cart_items = CartItem.objects.filter(session=cart_id)
+#         # paymentmethod = PaymentMethod.objects.get(id=cart.payment_method.id)
         
-        # Invoice = namedtuple('Receipt',('shopname', 'cart', 'cartitems', 'paymentmethod'))
+#         # # Invoice = namedtuple('Receipt',('shopname', 'cart', 'cartitems', 'paymentmethod'))
         
-        # invoice = Invoice(
-        #         shopname = shop,
-        #         cart = cart, 
-        #         cartitems = cart_items, 
-        #         paymentmethod = paymentmethod
+#         # # invoice = Invoice(
+#         # #         shopname = shop,
+#         # #         cart = cart, 
+#         # #         cartitems = cart_items, 
+#         # #         paymentmethod = paymentmethod
                 
-        #     )
+#         # #     )
         
-        shop_info_serializer = ShopRegistrationSerializer(shop)
-        cart_serializer = ShoppingSessionSerializer(cart)
-        cart_items_serializer = CartItemSerializer(cart_items, many=True)
-        payment_method_serializer = PaymentMethodSerializer(paymentmethod)     
-        # serializer = ReceiptSerializer(Invoice)
+#         # shop_info_serializer = ShopRegistrationSerializer(shop)
+#         # cart_serializer = ShoppingSessionSerializer(cart)
+#         # cart_items_serializer = CartItemSerializer(cart_items, many=True)
+#         # payment_method_serializer = PaymentMethodSerializer(paymentmethod)     
+#         # # serializer = ReceiptSerializer(Invoice)
         
-        res = {
-            "shop_info" : shop_info_serializer.data,
-            "cart_info" : cart_serializer.data,
-            "cart_items": cart_items_serializer.data,
-            "payment_method": payment_method_serializer.data  
-        }
+#         # res = {
+#         #     "shop_info" : shop_info_serializer.data,
+#         #     "cart_info" : cart_serializer.data,
+#         #     "cart_items": cart_items_serializer.data,
+#         #     "payment_method": payment_method_serializer.data  
+#         # }
         
-        return Response(res, status=status.HTTP_200_OK)
+#         # return Response(res, status=status.HTTP_200_OK)
     
-class SalesView(viewsets.ModelViewSet):
-    def list(self, request):
-        start_date = datetime.strptime(request.data["start_date"], '%Y-%m-%d').date()
-        end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d').replace(tzinfo=datetime.timezone.utc)
+# class SalesView(viewsets.ModelViewSet):
+#     def list(self, request):
+#         start_date = datetime.strptime(request.data["start_date"], '%Y-%m-%d').date()
+#         end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d').replace(tzinfo=datetime.timezone.utc)
         
-        # start_date = parse_date(request.data["start_date"])
-        # end_date = parse_date(request.data["end_date"])
+#         # start_date = parse_date(request.data["start_date"])
+#         # end_date = parse_date(request.data["end_date"])
         
-        carts= ShoppingSession.objects.filter(created_at=end_date,
-                                              shop=request.user.id)
-        print(f"This are the carts \n{carts}")
-        # cart_items = []
-        # for cart in carts:
-        #     # item = CartItem.objects.filter(session=cart.id)
-        #     # cart_items.append(item)
+#         carts= ShoppingSession.objects.filter(created_at=end_date,
+#                                               shop=request.user.id)
+#         print(f"This are the carts \n{carts}")
+#         # cart_items = []
+#         # for cart in carts:
+#         #     # item = CartItem.objects.filter(session=cart.id)
+#         #     # cart_items.append(item)
         
-        cart_serializer = ShoppingSessionSerializer(carts,many=True)
+#         cart_serializer = ShoppingSessionSerializer(carts,many=True)
         
-        return Response(cart_serializer.data, status=status.HTTP_200_OK)
+#         return Response(cart_serializer.data, status=status.HTTP_200_OK)
         
         
