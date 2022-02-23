@@ -9,8 +9,15 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+from dotenv import load_dotenv
 import os
 from pathlib import Path
+
+load_dotenv()
+# import environ S
+
+# env =  environ.Env()
+# environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,9 +33,9 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG_MODE = os.environ.get('DEBUG') == "1"  # 1 == True
 
 if DEBUG_MODE:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ['WEBSITE_HOSTNAME']]
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ.get('WEBSITE_HOSTNAME')]
 else:
-    ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME'], 'localhost']
+    ALLOWED_HOSTS = [os.environ.get('WEBSITE_HOSTNAME'), 'localhost']
 
 
 # Application definition
@@ -60,7 +67,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS=[os.environ['CSRF_TRUSTED_ORIGINS'], 'http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS=['https://skakey.ondigitalocean.app', 'https://127.0.0.1']
 
 ROOT_URLCONF = 'config.urls'
 
@@ -85,22 +92,23 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+
 if DEBUG_MODE:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
-    }
+    }   
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['POSTGRES_DB'],
-            'USER': os.getenv('POSTGRES_USER'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-            'HOST': os.getenv('POSTGRES_HOST'),
-            'PORT': os.getenv('POSTGRES_PORT'),
+            'NAME': os.environ.get('POSTGRES_DB'),
+            'USER': os.environ.get('POSTGRES_USER'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'HOST': os.environ.get('POSTGRES_HOST'),
+            'PORT': os.environ.get('POSTGRES_PORT'),
         }
     }
 

@@ -9,23 +9,23 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 class CustomAccountManager(BaseUserManager):
 
-    def create_user(self, phonenumber, password, **other_fields):
-        if not phonenumber:
+    def create_user(self, phone_number, password, **other_fields):
+        if not phone_number:
             raise ValueError("A phone number must be provided")
 
-        user = self.model(phonenumber=phonenumber, **other_fields)
+        user = self.model(phone_number=phone_number, **other_fields)
 
         user.set_password(password)
 
         user.save()
         return user
 
-    def create_superuser(self, phonenumber, password, **other_fields):
+    def create_superuser(self, phone_number, password, **other_fields):
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_superuser', True)
         other_fields.setdefault('is_active', True)
 
-        return self.create_user(phonenumber, password, **other_fields)
+        return self.create_user(phone_number, password, **other_fields)
 
 
 class ShopKeeper(AbstractBaseUser, PermissionsMixin):
