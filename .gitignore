@@ -219,3 +219,6 @@ cython_debug/
 
 #Database media files 
 add_to_cart.png
+
+#Github actions 
+.github
