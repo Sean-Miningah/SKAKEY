@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG') == "1"  # 1 == True
+DEBUG_MODE = os.environ.get('DEBUG') == "1"  # 1 == True
 
-if DEBUG:
+if DEBUG_MODE:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ['WEBSITE_HOSTNAME']]
 else:
     ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME'], 'localhost']
@@ -60,7 +60,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS=['https://skakey-main-api.azurewebsites.net', 'http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS=[os.environ['CSRF_TRUSTED_ORIGINS'], 'http://127.0.0.1']
 
 ROOT_URLCONF = 'config.urls'
 
@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-if DEBUG:
+if DEBUG_MODE:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
