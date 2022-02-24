@@ -51,19 +51,34 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     
 class Shop(models.Model):
     name = models.CharField(max_length=20, blank=False,)
-    shopkeeper = models.ForeignKey('ShopKeeper', 
+    shopkeeper = models.ForeignKey('ShopKeeper', related_name='shopkeepers',
                                    on_delete=models.CASCADE, blank=True, default=None)
+    registration_id = models.CharField(max_length=69, unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     start_date = models.DateField(auto_now=True)
     email_address = models.CharField(max_length=15, unique=True)
     photo = models.ImageField(upload_to='user/shop/')
     category = models.CharField(max_length=20, blank=False)
-    county = models.ForeignKey('Shopkeeper', 
-                               on_delete=models.CASCADE, blank=True, default=None)
+    county = models.ForeignKey('Shopkeeper', related_name='county',
+                               on_delete=models.RESTRICT,
+                               blank=True, default=None)
     ward = models.CharField(max_length=100)
     subcounty=models.CharField(max_length=100)
     
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.regtoken()
+        
+    def regtoken(self):
+        if not self.registration_id:
+            
+            registration_id = self.name + str(self.id + (10 ** 5))
+            shop = Shop.objects.get(id=self.id)
+            shop.registration_id = registration_id
+            shop.save()
+        
     def __str__(self):
         return self.name
     
@@ -79,7 +94,7 @@ class SubCounty(models.Model):
     
 class Ward(models.Model):
     name=models.CharField(max_length=30, default="None")
-    county=models.ForeingKey('SubCounty', 
+    county=models.ForeignKey('SubCounty', 
                              on_delete=models.CASCADE, blank=False)
     
 
