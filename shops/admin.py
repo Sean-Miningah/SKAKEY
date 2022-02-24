@@ -13,21 +13,26 @@ class ShopKeeperAdminConfig(UserAdmin):
                     'phone_number', 'is_employee', 'is_staff')
 
     fieldsets = (
-        (None, {'fields': ('first_name', 'last_name',)}),
-        ('Permissions', {'fields': ('is_staff', 'is_active')}),
+        (None, {'fields': ('first_name', 'last_name')
+                }
+        ),
+        ('Permissions', {'fields': ('is_staff', 'is_active')
+                         }
+        ),
         ('Personal', {'fields': ('is_employee', 'passportnumber'
-          'national_id', ''                       
-         'firebase_token', 'start_date', 'password')}),
+          'national_id', 'firebase_token', 'start_date', 'password1', 'password2')
+                      }
+        ),
     )
 
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('first_name', 'last_name', 'start_date', 'national_id', 'is_employee',
-                       'phone_number', 'passportnumber','firebase_token', 
-                       'password1', 'password2', 'is_staff', 'is_active', 'is_superuser'),
-        }),
-    )
+    # add_fieldsets = (
+    #     (None, {
+    #         'classes': ('wide',),
+    #         'fields': ('first_name', 'last_name', 'start_date', 'national_id', 'is_employee',
+    #                    'phone_number', 'passportnumber','firebase_token', 
+    #                    'password1', 'password2', 'is_staff', 'is_active', 'is_superuser'),
+    #     }),
+    # )
     
 class ShopAdminConfig(admin.ModelAdmin):
     ordering = ('-start_date',)
@@ -35,20 +40,22 @@ class ShopAdminConfig(admin.ModelAdmin):
     list_display = ('id','name', 'email_address',
                     'category', 'county')
 
-    fieldsets = (
-        (None, {'fields': ('name', 'shopkeeper',)}),
-        ('Personal', {'fields': ('start_date',
-         'photo', 'ward', 'subcounty')}),
-    )
+    # fieldsets = (
+    #     (None, {'fields': ('name', 'shopkeeper')
+    #             }),
+    #     ('Personal', {'fields': ('start_date',
+    #      'photo', 'ward', 'subcounty'),
+    #                   }),
+    # )
 
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('name', 'shopkeeper',
-                       'latitude', 'longitude', 'start_date', 'email_address', 'photo',
-                       'category', 'ward', 'county', 'ward', 'subcounty'),
-        }),
-    )
+    # add_fieldsets = (
+    #     (None, {
+    #         'classes': ('wide',),
+    #         'fields': ('name', 'shopkeeper',
+    #                    'latitude', 'longitude', 'start_date', 'email_address', 'photo',
+    #                    'category', 'ward', 'county', 'ward', 'subcounty'),
+    #     }),
+    # )
 
 
 # class SessionAdminConfig(admin.ModelAdmin):
