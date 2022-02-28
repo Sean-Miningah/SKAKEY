@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
-from .models import ShopKeeper, Shop
+from .models import (ShopKeeper, Shop, 
+                     County, SubCounty, Ward)
 
 # Register your models here.
 
@@ -58,6 +59,27 @@ class ShopAdminConfig(admin.ModelAdmin):
     #     }),
     # )
 
+class CountyAdminConfig(admin.ModelAdmin):
+    search_fields = ('name',)
+    list_display= ('id', 'name')
+    
+
+class SubCountyAdminConfig(admin.ModelAdmin):
+    search_fields = ('name', 'county')
+    list_display= ('id', 'name', 'county')    
+    
+class WardAdminConfig(admin.ModelAdmin):
+    search_fields = ('name', 'subcounty')
+    list_display= ('id', 'name', 'subcounty')  
+    
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': (
+                'name', 'subcounty',
+            ),
+        }),
+    )
 
 # class SessionAdminConfig(admin.ModelAdmin):
 #     ordering = ("-created_at",)
@@ -130,6 +152,9 @@ class ShopAdminConfig(admin.ModelAdmin):
 
 admin.site.register(ShopKeeper, ShopKeeperAdminConfig)
 admin.site.register(Shop, ShopAdminConfig)
+admin.site.register(County, CountyAdminConfig)
+admin.site.register(SubCounty, SubCountyAdminConfig)
+admin.site.register(Ward, WardAdminConfig)
 # admin.site.register(ShopProduct, ProductAdminConfig)
 # admin.site.register(ProductCategory, CategoryAdminConfig)
 # admin.site.register(ShoppingSession, SessionAdminConfig)

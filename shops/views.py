@@ -62,6 +62,10 @@ class ShopView(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         
+        #  Perform system checks of County -> Subcounty -> Ward before instance saving. 
+        
+        
+        
         res = {
             "message" : "Shop is good!!!",
         }

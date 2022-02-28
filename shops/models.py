@@ -63,8 +63,13 @@ class Shop(models.Model):
     county = models.ForeignKey('Shopkeeper', related_name='county',
                                on_delete=models.RESTRICT,
                                blank=True, default=None)
-    ward = models.CharField(max_length=100)
-    subcounty=models.CharField(max_length=100)
+    subcounty=models.ForeignKey('Subcounty', related_name='subcounty',
+                                on_delete=models.RESTRICT,
+                                blank=True, default=None)
+    
+    ward=models.ForeignKey('Ward', related_name='ward', 
+                           on_delete=models.RESTRICT, 
+                           blank=True, default=None)
     
     
     def save(self, *args, **kwargs):
@@ -85,17 +90,26 @@ class Shop(models.Model):
 
 class County(models.Model):
     name=models.CharField(max_length=20, blank=False, default='None')
+    
+    def __str__(self):
+        return self.name
        
 
 class SubCounty(models.Model):
     name=models.CharField(max_length=40, default="None",blank=False)
-    county=models.ForeignKey('County',
-                             on_delete=models.CASCADE, blank=False)
+    county=models.ForeignKey('County', related_name="subcounty_county",
+                             on_delete=models.CASCADE, blank=True)
+    
+    def __str__(self):
+        return self.name
     
 class Ward(models.Model):
-    name=models.CharField(max_length=30, default="None")
-    county=models.ForeignKey('SubCounty', 
-                             on_delete=models.CASCADE, blank=False)
+    name=models.CharField(max_length=40, default="None", blank=False)
+    subcounty=models.ForeignKey('SubCounty', related_name="subcounty_ward",
+                             on_delete=models.CASCADE, blank=True)
+    
+    def __str__(self):
+        return self.name
     
 
 # class ProductCategory(models.Model):
