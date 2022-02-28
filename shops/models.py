@@ -40,6 +40,9 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=100)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    shop = models.ForeignKey('Shop', related_name='shops',
+                                   on_delete=models.RESTRICT, blank=True,
+                                   null=True,default=None)
     
     objects = CustomAccountManager()
 
@@ -51,38 +54,33 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     
 class Shop(models.Model):
     name = models.CharField(max_length=20, blank=False,)
-    shopkeeper = models.ForeignKey('ShopKeeper', related_name='shopkeepers',
-                                   on_delete=models.CASCADE, blank=True, default=None)
-    registration_id = models.CharField(max_length=69, unique=True)
+    # registration_id = models.CharField(max_length=69, unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     start_date = models.DateField(auto_now=True)
-    email_address = models.CharField(max_length=15, unique=True)
+    email_address = models.CharField(max_length=50, unique=True)
     photo = models.ImageField(upload_to='user/shop/')
     category = models.CharField(max_length=20, blank=False)
-    county = models.ForeignKey('Shopkeeper', related_name='county',
-                               on_delete=models.RESTRICT,
-                               blank=True, default=None)
+    county = models.ForeignKey('County', related_name='county',
+                               on_delete=models.RESTRICT, blank=True)
     subcounty=models.ForeignKey('Subcounty', related_name='subcounty',
-                                on_delete=models.RESTRICT,
-                                blank=True, default=None)
+                                on_delete=models.RESTRICT, blank=True)
     
     ward=models.ForeignKey('Ward', related_name='ward', 
-                           on_delete=models.RESTRICT, 
-                           blank=True, default=None)
+                           on_delete=models.RESTRICT, blank=True)
     
     
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.regtoken()
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     self.regtoken()
         
-    def regtoken(self):
-        if not self.registration_id:
+    # def regtoken(self):
+    #     if not self.registration_id:
             
-            registration_id = self.name + str(self.id + (10 ** 5))
-            shop = Shop.objects.get(id=self.id)
-            shop.registration_id = registration_id
-            shop.save()
+    #         registration_id = self.name + str(self.id + (10 ** 5))
+    #         shop = Shop.objects.get(id=self.id)
+    #         shop.registration_id = registration_id
+    #         shop.save()
         
     def __str__(self):
         return self.name

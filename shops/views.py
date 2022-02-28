@@ -31,7 +31,7 @@ from .utilities import get_and_authenticate_shopkeeper
 ShopKeeper = get_user_model()
 
 
-class ShopKeeperView(viewsets.ModelViewSet):
+class CreateAccountView(viewsets.ModelViewSet):
     queryset = ShopKeeper.objects.all()
     serializer_class = ShopKeeperSerializer
 
@@ -53,7 +53,24 @@ class ShopKeeperView(viewsets.ModelViewSet):
         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
 
 
+
+class AccountInfoView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = ShopKeeper.objects.all()
+    serializer_class = ShopKeeperSerializer
+
+    def list(self, request, *args, **kwargs):
+        shopkeeper = request.user.id
+        info = ShopKeeper.objects.get(id=shopkeeper)
+        serializer = ShopKeeperSerializer(info)
+        res = {
+            "account-information": serializer.data
+        }
+
+        return Response(res, status=status.HTTP_201_CREATED)
+
 class ShopView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Shop.objects.all()
     serializer_class =  ShopSerializer
     
@@ -65,13 +82,17 @@ class ShopView(viewsets.ModelViewSet):
         
         #  Perform system checks of County -> Subcounty -> Ward before instance saving. 
         
-        
+        shop = Shop.objects.get(email_address=request.data["email_address"])
+        shopkeeper = ShopKeeper.objects.get(id=request.user.id)
+        shopkeeper.shop = shop
+        shopkeeper.is_employee = False
+        shopkeeper.save()
         
         res = {
             "message" : "Shop is good!!!",
         }
         
-        return Response(status=status.HTTP_201_CREATED, headers=headers)
+        return Response(res,status=status.HTTP_201_CREATED, headers=headers)
 
 
 class LocationView(viewsets.ModelViewSet):
@@ -104,6 +125,25 @@ def loginview(request):
     
     return Response(res, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+def shopworkers(request):
+    shop_id = request.data['id']
+    shopkeeper = ShopKeeper.objects.get(id=request.user.id)
+   
+     
+    shop = Shop.objects.get(id=shop_id)
+    shopkeeper.shop = shop
+    shop.save()
+    
+    res = {
+        "message": "User succesfully allocated to shop",
+    }
+    
+    return Response(res, status=status.HTTP_200_OK)
+    
+    
+    
 class LoginViewSet(viewsets.ModelViewSet):
     queryset = ShopKeeper.objects.all()
     serializer_class = ShopKeeperSerializer

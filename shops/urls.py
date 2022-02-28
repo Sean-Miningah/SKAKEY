@@ -5,9 +5,11 @@ from . import views
 
 
 router = DefaultRouter()
-router.register("shopkeeper-info", views.ShopKeeperView, basename="shopkeeper-info")
+router.register("create-account", views.CreateAccountView, basename="create-account")
+router.register("user-information", views.AccountInfoView, basename="user-info")
 router.register("shop-info", views.ShopView, basename="shop-info")
 router.register("location-info", views.LocationView, basename="location-info")
+
 # router.register("login", views.loginview, basename="login")
 
 # router.register("category", views.CategoryViewSet,
@@ -23,7 +25,8 @@ router.register("location-info", views.LocationView, basename="location-info")
 
 urlpatterns = [
     path('shop/', include(router.urls)),
-    path('shop/login/', views.loginview, name='login')
+    path('shop/login/', views.loginview, name='login'),
+    path('shop/shopkeeperassignment', views.shopworkers, name='shopkeeperassigment')
     # path('shop/cart-item/', views.cartsitem, name='carts-item'),
     # path("shop/payment/payment-method/", p_views.payment_method, name="payment-method")
 ]
