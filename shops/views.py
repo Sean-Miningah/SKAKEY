@@ -99,7 +99,7 @@ def loginview(request):
     
     res = {
         "message": "successfully logged in", 
-        "token": "Token" + token.key
+        "token": "Token " + token.key
         }
     
     return Response(res, status=status.HTTP_200_OK)
