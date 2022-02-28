@@ -65,7 +65,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS=['https://skakey.ondigitalocean.app', 'https://127.0.0.1']
+CSRF_TRUSTED_ORIGINS=['https://skakey-9iyay.ondigitalocean.app/', 'https://127.0.0.1']
 
 ROOT_URLCONF = 'config.urls'
 
