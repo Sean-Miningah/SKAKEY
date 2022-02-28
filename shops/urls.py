@@ -7,6 +7,7 @@ from . import views
 router = DefaultRouter()
 router.register("shopkeeper-info", views.ShopKeeperView, basename="shopkeeper-info")
 router.register("shop-info", views.ShopView, basename="shop-info")
+router.register("location-info", views.LocationView, basename="location-info")
 router.register("login", views.LoginViewSet, basename="login")
 
 # router.register("category", views.CategoryViewSet,

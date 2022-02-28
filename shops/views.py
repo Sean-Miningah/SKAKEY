@@ -17,12 +17,13 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
 
+from .models import (Shop, County, SubCounty, Ward)
 from .serializers import (
-    ShopSerializer,
-    ShopKeeperSerializer,)
+    ShopSerializer,ShopKeeperSerializer, CountySerializer, SubCountySerializer,
+    WardSerializer)
 
 # from payment.serializers import PaymentMethodSerializer
-from .models import Shop
+
 # from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
 from .utilities import get_and_authenticate_shop
@@ -72,6 +73,21 @@ class ShopView(viewsets.ModelViewSet):
         
         return Response(status=status.HTTP_201_CREATED, headers=headers)
 
+
+class LocationView(viewsets.ModelViewSet):
+    def list(self, request):
+        counties = County.objects.all()
+        subcounties = SubCounty.objects.all()
+        wards = Ward.objects.all()
+        
+        res = {
+            "counties" : CountySerializer(counties, many=True).data,
+            "subcounties": SubCountySerializer(subcounties, many=True).data,
+            "wards": WardSerializer(wards, many=True).data    
+        }
+        
+        return Response(res, status=status.HTTP_200_OK)
+        
 
 class LoginViewSet(viewsets.ModelViewSet):
     queryset = ShopKeeper.objects.all()

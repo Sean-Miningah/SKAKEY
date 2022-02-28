@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
-from .models import Shop
-# from .models import (ProductCategory,
-#                      ShopProduct, ShoppingSession, CartItem)
+from .models import (Shop, County,
+                     SubCounty, Ward, )
 # from payment.serclearializers import PaymentMethodSerializer
 
 from django.contrib.auth import get_user_model
@@ -32,6 +31,31 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = '__all__'
+        
+class CountySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = County 
+        fields = '__all__'
+        
+class SubCountySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCounty 
+        fields = '__all__'
+        
+class WardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ward 
+        fields = '__all__'
+        
+class LocationOptionsSerializer(serializers.ModelSerializer):
+    subcounties = SubCountySerializer(many=True)
+    wards = WardSerializer(many=True)
+    
+    class Meta:
+        model = County
+        fields = ('id', 'name', 'subcounties', 'wards')
+        
+
 
 
 
