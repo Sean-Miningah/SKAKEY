@@ -8,7 +8,7 @@ router = DefaultRouter()
 router.register("shopkeeper-info", views.ShopKeeperView, basename="shopkeeper-info")
 router.register("shop-info", views.ShopView, basename="shop-info")
 router.register("location-info", views.LocationView, basename="location-info")
-router.register("login", views.LoginViewSet, basename="login")
+# router.register("login", views.loginview, basename="login")
 
 # router.register("category", views.CategoryViewSet,
 #                 basename="category")
@@ -23,6 +23,7 @@ router.register("login", views.LoginViewSet, basename="login")
 
 urlpatterns = [
     path('shop/', include(router.urls)),
+    path('shop/login/', views.loginview, name='login')
     # path('shop/cart-item/', views.cartsitem, name='carts-item'),
     # path("shop/payment/payment-method/", p_views.payment_method, name="payment-method")
 ]

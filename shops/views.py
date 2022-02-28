@@ -26,7 +26,7 @@ from .serializers import (
 
 # from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
-from .utilities import get_and_authenticate_shop
+from .utilities import get_and_authenticate_shopkeeper
 
 ShopKeeper = get_user_model()
 
@@ -88,6 +88,21 @@ class LocationView(viewsets.ModelViewSet):
         
         return Response(res, status=status.HTTP_200_OK)
         
+@api_view(['POST'])
+def loginview(request):
+    phone_number = request.data['phone_number']
+    firebase_token = request.data['firebase_token']
+
+    shopkeeper = get_and_authenticate_shopkeeper(phone_number, firebase_token)
+    print(shopkeeper)
+    token = Token.objects.get(user=shopkeeper)
+    
+    res = {
+        "message": "successfully logged in", 
+        "token": "Token" + token.key
+        }
+    
+    return Response(res, status=status.HTTP_200_OK)
 
 class LoginViewSet(viewsets.ModelViewSet):
     queryset = ShopKeeper.objects.all()
@@ -98,7 +113,7 @@ class LoginViewSet(viewsets.ModelViewSet):
         phone_number = request.data['phone_number']
         firebase_token = request.data['firebase_token']
 
-        shopkeeper = get_and_authenticate_shop(phone_number, firebase_token)
+        shopkeeper = get_and_authenticate_shopkeeper(phone_number, firebase_token)
         token = Token.objects.get(user=shopkeeper)
         res = {
             "message": "successfully logged in",
