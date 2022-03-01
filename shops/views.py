@@ -129,16 +129,24 @@ def loginview(request):
 @permission_classes((IsAuthenticated, ))
 def shopworkers(request):
     shop_id = request.data['id']
-    shopkeeper = ShopKeeper.objects.get(id=request.user.id)
-   
-     
-    shop = Shop.objects.get(id=shop_id)
-    shopkeeper.shop = shop
-    shop.save()
+    try:
+        shopkeeper = ShopKeeper.objects.get(id=request.user.id)
     
-    res = {
-        "message": "User succesfully allocated to shop",
-    }
+        
+        shop = Shop.objects.get(id=shop_id)
+        if shop:
+            shopkeeper.shop = shop
+            shop.save()
+            
+            res = {
+                "message": "User succesfully allocated to shop",
+            }
+    except Except as e:
+        res = {
+            "message": "The are no searched shops in the system."
+        }
+        
+        
     
     return Response(res, status=status.HTTP_200_OK)
     
