@@ -134,20 +134,17 @@ def shopworkers(request):
     
         
         shop = Shop.objects.get(id=shop_id)
-        if shop:
-            shopkeeper.shop = shop
-            shop.save()
-            
-            res = {
-                "message": "User succesfully allocated to shop",
-            }
+        shopkeeper.shop = shop
+        shop.save()
+        
+        res = {
+            "message": "User succesfully allocated to shop",
+        }
     except Except as e:
         res = {
             "message": "The are no searched shops in the system."
         }
         
-        
-    
     return Response(res, status=status.HTTP_200_OK)
     
     
