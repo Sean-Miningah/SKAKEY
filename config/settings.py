@@ -29,7 +29,7 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG_MODE = os.environ.get('DEBUG') == "1"  # 1 == True
-DEBUG = os.environ.get('DEBUG') == 1
+DEBUG = os.environ.get('DEBUG') == "1"
 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ.get('WEBSITE_HOSTNAME')]
