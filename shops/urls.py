@@ -26,7 +26,8 @@ router.register("location-info", views.LocationView, basename="location-info")
 urlpatterns = [
     path('shop/', include(router.urls)),
     path('shop/login/', views.loginview, name='login'),
-    path('shop/shopkeeperassignment', views.shopworkers, name='shopkeeperassigment')
+    path('shop/shopkeeperassignment', views.shopworkers, name='shopkeeperassigment'),
+    path('shop/registeredshops', views.RegisteredShopView, name='registeredshop')
     # path('shop/cart-item/', views.cartsitem, name='carts-item'),
     # path("shop/payment/payment-method/", p_views.payment_method, name="payment-method")
 ]

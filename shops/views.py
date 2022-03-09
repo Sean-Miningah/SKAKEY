@@ -146,7 +146,23 @@ def shopworkers(request):
         }
         
     return Response(res, status=status.HTTP_200_OK)
+  
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))  
+def RegisteredShopView(request):  
+    shopkeeper_id = request.user.id
     
+    shopkeeper = ShopKeeper.objects.get(id=shopkeeper_id)
+    
+    registered_shops = Shop.objects.filter(id=shopkeeper.shop.id)
+    
+    serializer = ShopSerializer(registered_shops, many=True)
+    
+    res = {
+        "Registered_shops": serializer.data,
+    }
+    
+    return Response(res, status=status.HTTP_200_OK)
     
     
 class LoginViewSet(viewsets.ModelViewSet):

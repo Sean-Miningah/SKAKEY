@@ -14,7 +14,7 @@ class ShopKeeperAdminConfig(UserAdmin):
                     'phone_number', 'is_employee', 'is_staff')
 
     fieldsets = (
-        (None, {'fields': ('phone_number','first_name', 'last_name',)}),
+        (None, {'fields': ('phone_number','first_name', 'last_name','shop')}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
         ('Personal', {'fields': ('firebase_token', 'national_id',
                                  'passportnumber', 'password')}),
