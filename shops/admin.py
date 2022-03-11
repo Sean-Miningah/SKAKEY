@@ -16,13 +16,13 @@ class ShopKeeperAdminConfig(UserAdmin):
     fieldsets = (
         (None, {'fields': ('phone_number','first_name', 'last_name','shop')}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
-        ('Personal', {'fields': ('firebase_token', 'national_id',
+        ('Personal', {'fields': ('firebase_token', 'identity_no',
                                  'passportnumber', 'password')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('first_name', 'last_name', 'phone_number', 'passportnumber', 'national_id', 'shop',
+            'fields': ('first_name', 'last_name', 'phone_number', 'passportnumber', 'identity_no', 'shop',
                        'firebase_token', 'password1', 'password2', 'is_staff', 'is_active', 'is_superuser'),
         }),
     )
@@ -42,22 +42,23 @@ class ShopAdminConfig(admin.ModelAdmin):
     list_display = ('id','name', 'email_address',
                     'category', 'county')
 
-    # fieldsets = (
-    #     (None, {'fields': ('name', 'shopkeeper')
-    #             }),
-    #     ('Personal', {'fields': ('start_date',
-    #      'photo', 'ward', 'subcounty'),
-    #                   }),
-    # )
+    fieldsets = (
+        (None, {'fields': ('name', 'category')
+                }),
+        ('Contact_info', {'fields': ('email_address',),
+                      }),
+        ('Location',{'fields': ('latitude', 'longitude',
+                                'county', 'subcounty', 'ward')})
+    )
 
-    # add_fieldsets = (
-    #     (None, {
-    #         'classes': ('wide',),
-    #         'fields': ('name', 'shopkeeper',
-    #                    'latitude', 'longitude', 'start_date', 'email_address', 'photo',
-    #                    'category', 'ward', 'county', 'ward', 'subcounty'),
-    #     }),
-    # )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('name',
+                       'latitude', 'longitude', 'email_address', 'photo',
+                       'category', 'county', 'subcounty', 'ward'),
+        }),
+    )
 
 class CountyAdminConfig(admin.ModelAdmin):
     search_fields = ('name',)

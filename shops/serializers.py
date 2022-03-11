@@ -30,7 +30,7 @@ class ShopKeeperSerializer(serializers.ModelSerializer):
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = '__all__'
+        exclude = ['confirmation_code',]
         
 class CountySerializer(serializers.ModelSerializer):
     class Meta:

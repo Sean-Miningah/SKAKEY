@@ -128,12 +128,12 @@ def loginview(request):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def shopworkers(request):
-    shop_id = request.data['id']
+    confirmation_code = request.data['code']
     try:
         shopkeeper = ShopKeeper.objects.get(id=request.user.id)
     
         
-        shop = Shop.objects.get(id=shop_id)
+        shop = Shop.objects.get(confirmation_code=confirmation_code)
         shopkeeper.shop = shop
         shop.save()
         

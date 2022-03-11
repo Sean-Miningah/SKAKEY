@@ -2,6 +2,8 @@ from django.db import models
 # from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
+import random
+
 # from datetime import date
 
 # from payment.models import PaymentMethod
@@ -35,11 +37,12 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=50, blank=False, unique=True)
     passportnumber = models.CharField(max_length=25, blank=True)
     is_employee = models.BooleanField(default=True)
-    national_id = models.CharField(max_length=25, blank=True)
+    identity_no = models.CharField(max_length=50, blank=True)
     firebase_token = models.CharField(max_length=50, blank=True)
     password = models.CharField(max_length=100)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    device_id = models.CharField(max_length=100, blank=True)
     shop = models.ForeignKey('Shop', related_name='shops',
                                    on_delete=models.RESTRICT, blank=True,
                                    null=True,default=None)
@@ -54,7 +57,7 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     
 class Shop(models.Model):
     name = models.CharField(max_length=20, blank=False,)
-    # registration_id = models.CharField(max_length=69, unique=True)
+    confirmation_code = models.CharField(max_length=69, unique=False)
     latitude = models.FloatField()
     longitude = models.FloatField()
     start_date = models.DateField(auto_now=True)
@@ -70,9 +73,9 @@ class Shop(models.Model):
                            on_delete=models.RESTRICT, blank=True)
     
     
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     self.regtoken()
+    def save(self, *args, **kwargs):
+        self.confirmation_code = self.name[:2] + str(random.randint(100,1000))
+        super(Shop, self).save(*args, **kwargs)
         
     # def regtoken(self):
     #     if not self.registration_id:
