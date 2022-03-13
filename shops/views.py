@@ -2,6 +2,7 @@
 # from re import S
 # from django.http import JsonResponse
 # from django.core.exceptions import ObjectDoesNotExist
+import random
 from collections import namedtuple
 from datetime import datetime
 from django.utils.dateparse import parse_date
@@ -17,18 +18,42 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
 
-from .models import (Shop, County, SubCounty, Ward)
+from .models import (
+    OTPAuthentication, Shop, County, SubCounty, Ward)
 from .serializers import (
-    ShopSerializer,ShopKeeperSerializer, CountySerializer, SubCountySerializer,
-    WardSerializer)
+    OTPSerializer, ShopSerializer,ShopKeeperSerializer, 
+    CountySerializer, SubCountySerializer,WardSerializer)
 
 # from payment.serializers import PaymentMethodSerializer
 
 # from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
-from .utilities import get_and_authenticate_shopkeeper
+from .utilities import get_and_authenticate_shopkeeper, rand_value
 
 ShopKeeper = get_user_model()
+
+@api_view(['POST'])
+def OTP_registration(request):
+    random_length=15
+    phone_number = request.data['phone_number']
+    try:
+        authenticator = OTPAuthentication.objects.get(phone_number=phone_number)
+        serializer = OTPSerializer(authenticator)
+    except Exception as e:
+        print(e)
+        authenticator = OTPAuthentication(phone_number=phone_number,
+                                       token=rand_value(random_length))
+        authenticator.save()
+        serializer = OTPSerializer(authenticator)
+    finally:
+        # random_code = random.randrange(100,1000)
+        otp_code = 000000
+    res = {
+        'OTP_CODE' : str(otp_code),
+        'authentication_details' : serializer.data,
+    }
+    
+    return Response(res, status=status.HTTP_201_CREATED)
 
 
 class CreateAccountView(viewsets.ModelViewSet):
@@ -42,7 +67,7 @@ class CreateAccountView(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
 
         shopkeeper = ShopKeeper.objects.get(phone_number=request.data['phone_number'])
-        shopkeeper.set_password(request.data['firebase_token'])
+        shopkeeper.set_password(request.data['login_token'])
         shopkeeper.save()
         token = Token.objects.create(user=shopkeeper)
         res = {
@@ -112,10 +137,9 @@ class LocationView(viewsets.ModelViewSet):
 @api_view(['POST'])
 def loginview(request):
     phone_number = request.data['phone_number']
-    firebase_token = request.data['firebase_token']
+    login_token = request.data['login_token']
 
-    shopkeeper = get_and_authenticate_shopkeeper(phone_number, firebase_token)
-    print(shopkeeper)
+    shopkeeper = get_and_authenticate_shopkeeper(phone_number, login_token)
     token = Token.objects.get(user=shopkeeper)
     
     res = {

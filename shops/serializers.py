@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import (Shop, County,
+from .models import (OTPAuthentication, Shop, County,
                      SubCounty, Ward, )
 # from payment.serclearializers import PaymentMethodSerializer
 
@@ -14,6 +14,11 @@ ShopKeeper = get_user_model()
 #         model = Shop
 #         exclude = ['is_staff', 'is_active', 'start_date']
 
+class OTPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OTPAuthentication
+        fields = '__all__'
+
 class ShopKeeperSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -22,7 +27,7 @@ class ShopKeeperSerializer(serializers.ModelSerializer):
         extra_kwargs = {"firebase_token": {"write_only": True}}
 
         def create(self, validated_data):
-            password = validated_data.pop('firebase_token')
+            password = validated_data.pop('login_token')
             shop = Shop(**validated_data)
             shop.save()
             return shop

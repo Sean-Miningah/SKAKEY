@@ -8,6 +8,10 @@ import random
 
 # from payment.models import PaymentMethod
 
+class OTPAuthentication(models.Model):
+    token = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=40, unique=True)
+
 
 class CustomAccountManager(BaseUserManager):
 
@@ -36,7 +40,7 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     start_date = models.DateField(auto_now=True)
     phone_number = models.CharField(max_length=50, blank=False, unique=True)
     passportnumber = models.CharField(max_length=25, blank=True)
-    is_employee = models.BooleanField(default=True)
+    is_owner = models.BooleanField(default=False)
     identity_no = models.CharField(max_length=50, blank=True)
     firebase_token = models.CharField(max_length=50, blank=True)
     password = models.CharField(max_length=100)

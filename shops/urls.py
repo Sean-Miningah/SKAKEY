@@ -27,7 +27,8 @@ urlpatterns = [
     path('shop/', include(router.urls)),
     path('shop/login/', views.loginview, name='login'),
     path('shop/shopkeeperassignment', views.shopworkers, name='shopkeeperassigment'),
-    path('shop/registeredshops', views.RegisteredShopView, name='registeredshop')
+    path('shop/registeredshops', views.RegisteredShopView, name='registeredshop'),
+    path('shop/authentication', views.OTP_registration, name='authentication')
     # path('shop/cart-item/', views.cartsitem, name='carts-item'),
     # path("shop/payment/payment-method/", p_views.payment_method, name="payment-method")
 ]

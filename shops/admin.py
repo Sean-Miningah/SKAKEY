@@ -11,7 +11,7 @@ class ShopKeeperAdminConfig(UserAdmin):
     ordering = ('-start_date',)
     search_fields = ('first_name', 'last_name')
     list_display = ('id','first_name', 'last_name', 'firebase_token',
-                    'phone_number', 'is_employee', 'is_staff')
+                    'phone_number', 'is_owner', 'is_staff')
 
     fieldsets = (
         (None, {'fields': ('phone_number','first_name', 'last_name','shop')}),
