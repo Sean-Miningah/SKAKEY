@@ -10,20 +10,20 @@ from .models import (ShopKeeper, Shop,
 class ShopKeeperAdminConfig(UserAdmin):
     ordering = ('-start_date',)
     search_fields = ('first_name', 'last_name')
-    list_display = ('id','first_name', 'last_name', 'firebase_token',
+    list_display = ('id','first_name', 'last_name',
                     'phone_number', 'is_owner', 'is_staff')
 
     fieldsets = (
         (None, {'fields': ('phone_number','first_name', 'last_name','shop')}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
-        ('Personal', {'fields': ('firebase_token', 'identity_no',
+        ('Personal', {'fields': ('identity_no',
                                  'passportnumber', 'password')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('first_name', 'last_name', 'phone_number', 'passportnumber', 'identity_no', 'shop',
-                       'firebase_token', 'password1', 'password2', 'is_staff', 'is_active', 'is_superuser'),
+                        'password1', 'password2', 'is_staff', 'is_active', 'is_superuser'),
         }),
     )
 

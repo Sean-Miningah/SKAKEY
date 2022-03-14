@@ -42,7 +42,7 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     passportnumber = models.CharField(max_length=25, blank=True)
     is_owner = models.BooleanField(default=False)
     identity_no = models.CharField(max_length=50, blank=True)
-    firebase_token = models.CharField(max_length=50, blank=True)
+    # login_token = models.CharField(max_length=50, blank=True)
     password = models.CharField(max_length=100)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

@@ -24,7 +24,7 @@ class ShopKeeperSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShopKeeper
         exclude = ['is_staff','is_active','password']
-        extra_kwargs = {"firebase_token": {"write_only": True}}
+        # extra_kwargs = {"firebase_token": {"write_only": True}}
 
         def create(self, validated_data):
             password = validated_data.pop('login_token')
