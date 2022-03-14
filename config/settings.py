@@ -32,7 +32,7 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') == "1"
 
 if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ.get('WEBSITE_HOSTNAME')]
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ.get('AFRICASTALKING_USERNAME')]
 else:
     ALLOWED_HOSTS = [os.environ.get('WEBSITE_HOSTNAME'), 'localhost', '127.0.0.1']
 

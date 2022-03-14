@@ -1,11 +1,11 @@
 from __future__ import print_function
-
+import os
 import africastalking 
 
 class SMS:
     def __init__(self):
-        self.username = "skakey"
-        self.api_key = "71b5fbfdb6fdf9e96551e34e3f4807ac115b112894dbc8e567a2cd03178226dd"
+        self.username =  os.environ.get('AFRICASTALKING_USERNAME')
+        self.api_key = os.environ.get('AFRCASTALKING_MYAPIKEY')
         
         africastalking.initialize(self.username, self.api_key)
         
