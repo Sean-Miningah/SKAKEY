@@ -28,31 +28,47 @@ from .serializers import (
 
 # from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
-from .utilities import get_and_authenticate_shopkeeper, rand_value
+from .utilities import (get_and_authenticate_shopkeeper, rand_value,
+                        otp_generator)
 from shops.otp import SMS
 
 ShopKeeper = get_user_model()
 
 @api_view(['POST'])
-def OTP_registration(request):
-    random_length=15
-    phone_number = request.data['phone_number']
-    try:
-        authenticator = OTPAuthentication.objects.get(phone_number=phone_number)
-        serializer = OTPSerializer(authenticator)
-    except Exception as e:
-        authenticator = OTPAuthentication(phone_number=phone_number,
-                                       token=rand_value(random_length))
-        authenticator.save()
-        serializer = OTPSerializer(authenticator)
-    finally:
-        otp_code = random.randrange(1000,10000)
-        text_message = SMS().send(str(otp_code), [phone_number])
-        # otp_code = 000000
-    res = {
-        'OTP_CODE' : str(otp_code),
-        'authentication_details' : serializer.data,
-    }
+def OTP_registration(request, id=False):
+    
+    if not id:
+        random_length=15
+        phone_number = request.data['phone_number']
+        try:
+            authenticator = OTPAuthentication.objects.get(phone_number=phone_number)
+            serializer = OTPSerializer(authenticator)
+        except Exception as e:
+            authenticator = OTPAuthentication(phone_number=phone_number,
+                                        token=rand_value(random_length))
+            authenticator.save()
+            serializer = OTPSerializer(authenticator)
+        finally:
+            otp_code = random.randrange(1000,10000)
+            text_message = SMS().send(otp_generator(), [phone_number])
+            # otp_code = 000000
+        res = {
+            'OTP_CODE' : str(otp_code),
+            'authentication_details' : serializer.data,
+        }
+    elif id:
+        shop = Shop.objects.get(id=id)
+        shopOwner = ShopKeeper.objects.get(shop=shop)
+        shop_phoneno=shopOwner.phone_number
+        # serializer = ShopKeeperSerializer(shopkeeper)
+        
+        otp = otp_generator()
+        shopowner_message = SMS().send(otp,[shop_phoneno])
+        print(shop_phoneno)
+        
+        res = {
+            'otp_code': otp,
+        }
     
     return Response(res, status=status.HTTP_201_CREATED)
 
@@ -108,14 +124,8 @@ class ShopView(viewsets.ModelViewSet):
         
         #  Perform system checks of County -> Subcounty -> Ward before instance saving. 
         
-        shop = Shop.objects.get(email_address=request.data["email_address"])
-        shopkeeper = ShopKeeper.objects.get(id=request.user.id)
-        shopkeeper.shop = shop
-        shopkeeper.is_employee = False
-        shopkeeper.save()
-        
         res = {
-            "message" : "Shop is good!!!",
+            "message" : "Shop Creation Succesfull",
         }
         
         return Response(res,status=status.HTTP_201_CREATED, headers=headers)

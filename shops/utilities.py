@@ -22,3 +22,8 @@ def rand_value(length):
                                  string.digits + string.punctuation)for x in range(length))
     
     return str(res)
+
+def otp_generator():
+    otp_code = random.randrange(1000,10000)
+    return str(otp_code)
+    
