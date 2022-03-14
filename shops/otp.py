@@ -18,9 +18,9 @@ class SMS:
         
         try:
             response = self.sms.send(message, recipients)
-            print (response)
+            # print (response)
         except Exception as e:
-            print('Encountered an error while sending: %s' % str(e))
+            return e
             
 if __name__ == '__main__':
     SMS().send()
