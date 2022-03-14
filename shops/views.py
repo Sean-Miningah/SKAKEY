@@ -29,6 +29,7 @@ from .serializers import (
 # from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
 from .utilities import get_and_authenticate_shopkeeper, rand_value
+from otp import SMS
 
 ShopKeeper = get_user_model()
 
@@ -40,14 +41,15 @@ def OTP_registration(request):
         authenticator = OTPAuthentication.objects.get(phone_number=phone_number)
         serializer = OTPSerializer(authenticator)
     except Exception as e:
-        print(e)
         authenticator = OTPAuthentication(phone_number=phone_number,
                                        token=rand_value(random_length))
         authenticator.save()
         serializer = OTPSerializer(authenticator)
     finally:
-        # random_code = random.randrange(100,1000)
-        otp_code = 000000
+        otp_code = random.randrange(100,1000)
+        phonenumber = authenticator.phone_number
+        text_message = SMS().send(str(otp_code), [phonenumber])
+        # otp_code = 000000
     res = {
         'OTP_CODE' : str(otp_code),
         'authentication_details' : serializer.data,
