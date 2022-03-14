@@ -29,7 +29,7 @@ from .serializers import (
 # from payment.models import PaymentMethod
 from django.contrib.auth import get_user_model
 from .utilities import get_and_authenticate_shopkeeper, rand_value
-from otp import SMS
+from shops.otp import SMS
 
 ShopKeeper = get_user_model()
 
@@ -47,8 +47,7 @@ def OTP_registration(request):
         serializer = OTPSerializer(authenticator)
     finally:
         otp_code = random.randrange(1000,10000)
-        phonenumber = authenticator.phone_number
-        text_message = SMS().send(str(otp_code), [phonenumber])
+        text_message = SMS().send(str(otp_code), [phone_number])
         # otp_code = 000000
     res = {
         'OTP_CODE' : str(otp_code),
