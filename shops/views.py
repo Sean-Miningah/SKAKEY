@@ -46,7 +46,7 @@ def OTP_registration(request):
         authenticator.save()
         serializer = OTPSerializer(authenticator)
     finally:
-        otp_code = random.randrange(100,1000)
+        otp_code = random.randrange(1000,10000)
         phonenumber = authenticator.phone_number
         text_message = SMS().send(str(otp_code), [phonenumber])
         # otp_code = 000000
