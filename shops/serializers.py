@@ -17,7 +17,7 @@ ShopKeeper = get_user_model()
 class OTPSerializer(serializers.ModelSerializer):
     class Meta:
         model = OTPAuthentication
-        fields = '__all__'
+        exclude = ['id',]
 
 class ShopKeeperSerializer(serializers.ModelSerializer):
 
