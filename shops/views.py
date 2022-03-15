@@ -189,9 +189,9 @@ def RegisteredShopView(request):
     
     shopkeeper = ShopKeeper.objects.get(id=shopkeeper_id)
     
-    registered_shops = Shop.objects.filter(id=shopkeeper.shop.id)
+    registered_shops = Shop.objects.get(id=shopkeeper.shop.id)
     
-    serializer = ShopSerializer(registered_shops, many=True)
+    serializer = ShopSerializer(registered_shops)
     
     res = {
         "Registered_shops": serializer.data,
