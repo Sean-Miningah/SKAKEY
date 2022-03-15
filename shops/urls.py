@@ -26,10 +26,12 @@ router.register("location-info", views.LocationView, basename="location-info")
 urlpatterns = [
     path('shop/', include(router.urls)),
     path('shop/login/', views.loginview, name='login'),
-    path('shop/shopkeeperassignment', views.shopworkers, name='shopkeeperassigment'),
+    path('shop/shopkeeperassignment', views.keeperassingment, name='shopkeeperassigment'),
     path('shop/registeredshops', views.RegisteredShopView, name='registeredshop'),
-    path('shop/authentication', views.OTP_registration, name='authentication'),
-      path('shop/authentication/<int:id>/', views.OTP_registration, name='shopowner-authentication')
+    path('shop/authentication', views.OTP_sms, name='sms'),
+    path('shop/authentication/<int:id>/', views.OTP_sms, name='sms'),    
+    path('shop/auth-response', views.OTP_response, name='auth-response'),
+    # path('shop/auth-response/<int:id>/', views.OTP_response, name='auth-response')   
     # path('shop/cart-item/', views.cartsitem, name='carts-item'),
     # path("shop/payment/payment-method/", p_views.payment_method, name="payment-method")
 ]

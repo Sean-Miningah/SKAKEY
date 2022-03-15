@@ -35,42 +35,44 @@ from shops.otp import SMS
 ShopKeeper = get_user_model()
 
 @api_view(['POST'])
-def OTP_registration(request, id=False):
-    
+def OTP_sms(request, id=False):
+    otp_code = otp_generator()
     if not id:
-        random_length=15
         phone_number = request.data['phone_number']
-        try:
-            authenticator = OTPAuthentication.objects.get(phone_number=phone_number)
-            serializer = OTPSerializer(authenticator)
-        except Exception as e:
-            authenticator = OTPAuthentication(phone_number=phone_number,
-                                        token=rand_value(random_length))
-            authenticator.save()
-            serializer = OTPSerializer(authenticator)
-        finally:
-            otp_code = otp_generator()
-            text_message = SMS().send(otp_code, [phone_number])
-            # otp_code = 000000
+        text_message = SMS().send(otp_code, [phone_number])
         res = {
             'OTP_CODE' : otp_code,
-            'authentication_details' : serializer.data,
         }
-    elif id:
+    else:
         shop = Shop.objects.get(id=id)
-        shopOwner = ShopKeeper.objects.get(shop=shop)
+        shopOwner = ShopKeeper.objects.get(shop=shop, is_owner=True)
         shop_phoneno=shopOwner.phone_number
-        # serializer = ShopKeeperSerializer(shopkeeper)
-        
-        otp = otp_generator()
-        shopowner_message = SMS().send(otp,[shop_phoneno])
-        print(shop_phoneno)
+        text_message = SMS().send(otp_code, [shop_phoneno])
         
         res = {
-            'otp_code': otp,
+            'OTP_CODE': otp_code
         }
-    
+        
     return Response(res, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+def OTP_response(request):
+    phoneNumber = request.data['phone_number']
+    randnumLength = 15
+    try:
+        authenticator = OTPAuthentication.objects.get(phone_number=phoneNumber)
+        serializer = OTPSerializer(authenticator)
+    except Exception as e:
+        authenticator = OTPAuthentication(phone_number=phoneNumber,
+                                    token=rand_value(randnumLength))
+        authenticator.save()
+        serializer = OTPSerializer(authenticator)
+    finally:
+        res = {
+            'authentication_details' : serializer.data
+        }
+
+    return Response(res, status=status.HTTP_200_OK)
 
 
 class CreateAccountView(viewsets.ModelViewSet):
@@ -162,12 +164,10 @@ def loginview(request):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
-def shopworkers(request):
+def keeperassingment(request):
     id = request.data['id']
     try:
         shopkeeper = ShopKeeper.objects.get(id=request.user.id)
-    
-        
         shop = Shop.objects.get(id=id)
         shopkeeper.shop = shop
         shop.save()

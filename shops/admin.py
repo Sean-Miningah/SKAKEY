@@ -15,7 +15,7 @@ class ShopKeeperAdminConfig(UserAdmin):
 
     fieldsets = (
         (None, {'fields': ('phone_number','first_name', 'last_name','shop')}),
-        ('Permissions', {'fields': ('is_staff', 'is_active')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_owner')}),
         ('Personal', {'fields': ('identity_no',
                                  'passportnumber', 'password')}),
     )
@@ -23,7 +23,7 @@ class ShopKeeperAdminConfig(UserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': ('first_name', 'last_name', 'phone_number', 'passportnumber', 'identity_no', 'shop',
-                        'password1', 'password2', 'is_staff', 'is_active', 'is_superuser'),
+                        'password1', 'password2', 'is_staff', 'is_active', 'is_superuser', 'is_owner'),
         }),
     )
 
