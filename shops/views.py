@@ -49,11 +49,11 @@ def OTP_registration(request, id=False):
             authenticator.save()
             serializer = OTPSerializer(authenticator)
         finally:
-            otp_code = random.randrange(1000,10000)
+            otp_code = otp_generator()
             text_message = SMS().send(otp_generator(), [phone_number])
             # otp_code = 000000
         res = {
-            'OTP_CODE' : str(otp_code),
+            'OTP_CODE' : otp_code,
             'authentication_details' : serializer.data,
         }
     elif id:
@@ -163,12 +163,12 @@ def loginview(request):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def shopworkers(request):
-    confirmation_code = request.data['code']
+    id = request.data['id']
     try:
         shopkeeper = ShopKeeper.objects.get(id=request.user.id)
     
         
-        shop = Shop.objects.get(confirmation_code=confirmation_code)
+        shop = Shop.objects.get(id=id)
         shopkeeper.shop = shop
         shop.save()
         
