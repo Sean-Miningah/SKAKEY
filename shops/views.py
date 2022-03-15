@@ -50,7 +50,7 @@ def OTP_registration(request, id=False):
             serializer = OTPSerializer(authenticator)
         finally:
             otp_code = otp_generator()
-            text_message = SMS().send(otp_generator(), [phone_number])
+            text_message = SMS().send(otp_code, [phone_number])
             # otp_code = 000000
         res = {
             'OTP_CODE' : otp_code,
