@@ -34,11 +34,11 @@ class ShopKeeperSerializer(serializers.ModelSerializer):
         
         
 class AccountInfoSerializer(serializers.ModelSerializer):
-    shop = serializers.StringRelatedField()
+    # shop_name = serializers.StringRelatedField()
     
     class Meta:
         model = ShopKeeper
-        exclude = ['is_staff','is_active','password']
+        exclude = ['is_staff','is_active','password',]
         # extra_kwargs = {"firebase_token": {"write_only": True}}
 
 class ShopSerializer(serializers.ModelSerializer):
