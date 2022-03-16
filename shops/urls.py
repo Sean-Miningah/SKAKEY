@@ -31,6 +31,7 @@ urlpatterns = [
     path('shop/authentication', views.OTP_sms, name='sms'),
     path('shop/authentication/<int:id>/', views.OTP_sms, name='sms'),    
     path('shop/auth-response', views.OTP_response, name='auth-response'),
+    path('shop/shop-status', views.ShopStatus, name='shop-status')
     # path('shop/auth-response/<int:id>/', views.OTP_response, name='auth-response')   
     # path('shop/cart-item/', views.cartsitem, name='carts-item'),
     # path("shop/payment/payment-method/", p_views.payment_method, name="payment-method")

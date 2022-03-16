@@ -189,6 +189,31 @@ def keeperassingment(request):
         }
         
     return Response(res, status=status.HTTP_200_OK)
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def ShopStatus(request):
+    OWNER_ERROR = 210
+    EMPLOYEE_ERROR = 220
+    SUCCESS = 200
+    
+    shopkeeper = ShopKeeper.objects.get(id=request.user.id)
+    if shopkeeper.is_owner:
+        if shopkeeper.shop:
+            status_code = '200'
+        else:
+            status_code = '210'
+    else: 
+        if shopkeeper.shop:
+            status_code = '200'
+        else:
+            status_code = '220'
+            
+            
+    res = {
+        'status_code': status_code,
+    }
+    return Response(res, status=status.HTTP_200_OK)
+    
   
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))  
