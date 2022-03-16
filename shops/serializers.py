@@ -31,12 +31,21 @@ class ShopKeeperSerializer(serializers.ModelSerializer):
             shop = Shop(**validated_data)
             shop.save()
             return shop
+        
+        
+class AccountInfoSerializer(serializers.ModelSerializer):
+    shop = serializers.StringRelatedField()
+    
+    class Meta:
+        model = ShopKeeper
+        exclude = ['is_staff','is_active','password']
+        # extra_kwargs = {"firebase_token": {"write_only": True}}
 
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         exclude = ['confirmation_code',]
-        
+
 class CountySerializer(serializers.ModelSerializer):
     class Meta:
         model = County 

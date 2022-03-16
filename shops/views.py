@@ -22,7 +22,7 @@ from .models import (
     OTPAuthentication, Shop, County, SubCounty, Ward)
 from .serializers import (
     OTPSerializer, ShopSerializer,ShopKeeperSerializer, 
-    CountySerializer, SubCountySerializer,WardSerializer)
+    CountySerializer, SubCountySerializer,WardSerializer, AccountInfoSerializer)
 
 # from payment.serializers import PaymentMethodSerializer
 
@@ -101,14 +101,18 @@ class CreateAccountView(viewsets.ModelViewSet):
 class AccountInfoView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = ShopKeeper.objects.all()
-    serializer_class = ShopKeeperSerializer
+    serializer_class = AccountInfoSerializer
 
     def list(self, request, *args, **kwargs):
         shopkeeper = request.user.id
         info = ShopKeeper.objects.get(id=shopkeeper)
-        serializer = ShopKeeperSerializer(info)
+        shop = Shop.objects.get(id=info.shop.id)
+        serializer = AccountInfoSerializer(info)
         res = {
-            "account-information": serializer.data
+            **serializer.data,
+            **{
+                "shop_name": shop.name
+            }
         }
 
         return Response(res, status=status.HTTP_201_CREATED)
@@ -139,6 +143,20 @@ class ShopView(viewsets.ModelViewSet):
         }
         
         return Response(res,status=status.HTTP_201_CREATED, headers=headers)
+    
+    def destroy(self, request, *args, **kwargs):
+        shop = self.get_object()
+        shopKeeper = ShopKeeper.objects.get(id=request.user.id)
+        if shopKeeper.shop == shop:
+            shop.delete()
+            res = {
+                'message':'You have succesfully deleted the Shop'
+            }
+        else:
+            res = {
+                'message':'You are not the owner to delete this Shop'
+            }
+        return Response(res)
 
 
 class LocationView(viewsets.ModelViewSet):
@@ -189,6 +207,7 @@ def keeperassingment(request):
         }
         
     return Response(res, status=status.HTTP_200_OK)
+
 @api_view(['GET'])
 @permission_classes((IsAuthenticated, ))
 def ShopStatus(request):
@@ -213,7 +232,6 @@ def ShopStatus(request):
         'status_code': status_code,
     }
     return Response(res, status=status.HTTP_200_OK)
-    
   
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))  
@@ -251,6 +269,17 @@ class LoginViewSet(viewsets.ModelViewSet):
 
         return Response(res, status=status.HTTP_201_CREATED)
 
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def UnregisterShopKeeper(request):
+    shopKeeper = ShopKeeper.objects.get(id=request.user.id)
+    shopKeeper.shop = None
+    shopKeeper.save()
+    res = {
+        'message': "Shop Keeper is succesfully unregistered from the shop."
+    }
+    return Response(res, status=status.HTTP_201_CREATED)
 
 # class CategoryViewSet(viewsets.ModelViewSet):
 #     permission_classes = [IsAuthenticated]

@@ -47,7 +47,7 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     shop = models.ForeignKey('Shop', related_name='shops',
-                                   on_delete=models.RESTRICT, blank=True,
+                                   on_delete=models.CASCADE, blank=True,
                                    null=True,default=None)
     
     objects = CustomAccountManager()
