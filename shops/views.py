@@ -124,7 +124,15 @@ class ShopView(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         
+        
         #  Perform system checks of County -> Subcounty -> Ward before instance saving. 
+        
+        # Assigning User to shop after the creation of the shop
+        email_address = request.data['email_address']
+        shop = Shop.objects.get(email_address=email_address)
+        shopKeeper = ShopKeeper.objects.get(id=request.user.id)
+        shopKeeper.shop = shop
+        shopKeeper.save()
         
         res = {
             "message" : "Shop Creation Succesfull",

@@ -46,7 +46,6 @@ class ShopKeeper(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=100)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    device_id = models.CharField(max_length=100, blank=True)
     shop = models.ForeignKey('Shop', related_name='shops',
                                    on_delete=models.RESTRICT, blank=True,
                                    null=True,default=None)
@@ -70,6 +69,8 @@ class Shop(models.Model):
     category = models.CharField(max_length=20, blank=False)
     county = models.ForeignKey('County', related_name='county',
                                on_delete=models.RESTRICT, blank=True)
+    
+    device_id = models.CharField(max_length=100, blank=True)
     subcounty=models.ForeignKey('Subcounty', related_name='subcounty',
                                 on_delete=models.RESTRICT, blank=True)
     
