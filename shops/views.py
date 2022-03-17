@@ -196,7 +196,7 @@ def keeperassingment(request):
         shopkeeper = ShopKeeper.objects.get(id=request.user.id)
         shop = Shop.objects.get(id=id)
         shopkeeper.shop = shop
-        shop.save()
+        shopkeeper.save()
         
         res = {
             "message": "User succesfully allocated to shop",
